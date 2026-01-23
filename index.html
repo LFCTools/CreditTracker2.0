@@ -1557,7 +1557,7 @@ function bindEvents() {
     }
   });
 
-  onEl("btnReloadFixtures","click", ()=>{ fixturesCache=null; renderFixtures(); });
+  onEl("btnReloadFixtures","click", reloadFixturesHard);
   onEl("fixtureShow","change", renderFixtures);
   onEl("fixtureComp","change", renderFixtures);
 
@@ -2147,7 +2147,7 @@ function showToast(msg){
   const fr = document.getElementById("btnReloadFixtures");
   if (fs) fs.addEventListener("change", renderFixtures);
   if (fc) fc.addEventListener("change", renderFixtures);
-  if (fr) fr.addEventListener("click", ()=>{ fixturesCache=null; renderFixtures(); });
+  if (fr) fr.addEventListener("click", reloadFixturesHard);
   const clr = document.getElementById("btnClearFixtures");
   if (clr) clr.addEventListener("click", ()=>{ setImportedFixtures([]); fixturesCache=null; try{showToast("Cleared imported fixtures");}catch(e){} renderFixtures(); });
 })();
@@ -2238,13 +2238,36 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
 }
 
+async function reloadFixturesHard(){
+  try{
+    // Clear in-memory + local cached CSV so we definitely fetch the latest sheet
+    fixturesCache = null;
+    try{
+      localStorage.removeItem(FIXTURES_CACHE_KEY);
+      localStorage.removeItem(FIXTURES_CACHE_TS_KEY);
+    }catch(_){}
+
+    // Fetch live CSV immediately (and re-cache it)
+    const live = await fetchFixturesFromCSV();
+    if (Array.isArray(live) && live.length){
+      fixturesCache = live;
+      saveCachedCSVFixtures(live);
+    }
+
+    await renderFixtures();
+  }catch(e){
+    console.error("Failed to refresh fixtures", e);
+    alert("Failed to refresh fixtures. Check your connection and try again.");
+  }
+}
+
 function bindFixturesControls(){
   const fs = document.getElementById("fixtureShow");
   const fc = document.getElementById("fixtureComp");
   const fr = document.getElementById("btnReloadFixtures");
   if (fs) fs.onchange = () => renderFixtures();
   if (fc) fc.onchange = () => renderFixtures();
-  if (fr) fr.onclick = () => { fixturesCache = null; renderFixtures(); };
+  if (fr) fr.onclick = reloadFixturesHard;
 }
 
 function seasonLabel(startYY){
