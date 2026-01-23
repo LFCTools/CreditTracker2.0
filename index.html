@@ -1789,13 +1789,166 @@ function createAccount(name, autoCup={LC:false, FAC:false, UCL:false}, seasonId=
 
 var fixturesCache = null;
 
+// Published Google Sheet (CSV)
+const FIXTURES_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRqcy7d0MakWNfXkcDa60y4opsxQifUfzw38man6J0-U-2BvQKbUIJPnpPMFaxQMlYBV2-psPNram_E/pub?gid=716063176&single=true&output=csv";
 
+// Cache CSV results in localStorage (so fixtures still load if you're offline)
+const FIXTURES_CACHE_KEY = "thlfc_fixtures_csv_cache_v1";
+const FIXTURES_CACHE_TS_KEY = "thlfc_fixtures_csv_cache_ts_v1";
+const FIXTURES_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
 
+function loadCachedCSVFixtures() {
+  try {
+    const ts = Number(localStorage.getItem(FIXTURES_CACHE_TS_KEY) || "0");
+    const raw = localStorage.getItem(FIXTURES_CACHE_KEY);
+    if (!raw) return null;
+    const fixtures = JSON.parse(raw);
+    if (!Array.isArray(fixtures)) return null;
+    return { ts, fixtures };
+  } catch (e) {
+    return null;
+  }
+}
+
+function saveCachedCSVFixtures(fixtures) {
+  try {
+    localStorage.setItem(FIXTURES_CACHE_KEY, JSON.stringify(fixtures || []));
+    localStorage.setItem(FIXTURES_CACHE_TS_KEY, String(Date.now()));
+  } catch (e) {}
+}
+
+// Simple CSV parser that supports quoted fields + commas
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cur = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < (text || "").length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (inQuotes) {
+      if (ch === '"' && next === '"') {
+        cur += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        cur += ch;
+      }
+      continue;
+    }
+
+    if (ch === '"') {
+      inQuotes = true;
+      continue;
+    }
+
+    if (ch === ",") {
+      row.push(cur);
+      cur = "";
+      continue;
+    }
+
+    if (ch === "\n") {
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = "";
+      continue;
+    }
+
+    if (ch === "\r") continue;
+
+    cur += ch;
+  }
+
+  // last cell
+  row.push(cur);
+  rows.push(row);
+
+  // drop fully empty trailing rows
+  while (rows.length && rows[rows.length - 1].every(v => String(v || "").trim() === "")) rows.pop();
+  return rows;
+}
+
+function toFixtureObject(headers, cells) {
+  const obj = {};
+  headers.forEach((h, idx) => { obj[h] = (cells[idx] ?? "").trim(); });
+
+  const date = obj.date || "";
+  const time = obj.time || "00:00";
+  const competition = obj.competition || "OTHER";
+  const opponent = obj.opponent || "";
+  const venue = (obj.venue || "H").toUpperCase() === "A" ? "A" : "H";
+
+  // Ensure ID exists (needed for de-duping + tracked highlighting)
+  const safeOpp = opponent.replace(/\s+/g, "").toLowerCase();
+  const id = (obj.id && obj.id.trim()) ? obj.id.trim() :
+    `${date}-${competition.toLowerCase()}-${safeOpp}-${venue.toLowerCase()}-${String(time).replace(":","")}`;
+
+  // Ensure datetime_utc exists (some parts of the app use date only, but keep it consistent)
+  const dtUtc = (obj.datetime_utc && obj.datetime_utc.trim()) ? obj.datetime_utc.trim() :
+    (date ? `${date}T${time}:00Z` : "");
+
+  return {
+    id,
+    season: obj.season || "",
+    date,
+    time,
+    datetime_utc: dtUtc,
+    competition,
+    opponent,
+    venue,
+    location: obj.location || ""
+  };
+}
+
+async function fetchFixturesFromCSV() {
+  const res = await fetch(FIXTURES_CSV_URL, { cache: "no-store" });
+  if (!res.ok) throw new Error(`CSV HTTP ${res.status}`);
+  const text = await res.text();
+  const rows = parseCSV(text);
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => String(h || "").trim());
+  const dataRows = rows.slice(1);
+
+  const fixtures = [];
+  for (const r of dataRows) {
+    if (!r || r.every(v => String(v || "").trim() === "")) continue;
+    fixtures.push(toFixtureObject(headers, r));
+  }
+
+  // De-dupe by id (keep last)
+  const map = new Map();
+  fixtures.forEach(f => { if (f && f.id) map.set(String(f.id), f); });
+  return Array.from(map.values());
+}
 
 async function loadFixturesData() {
   if (fixturesCache) return fixturesCache;
 
-  // Primary: embedded JSON in index.html (offline + SW-safe)
+  // 1) CSV cache (fast + offline-friendly)
+  const cached = loadCachedCSVFixtures();
+  if (cached && (Date.now() - cached.ts) < FIXTURES_TTL_MS && cached.fixtures.length) {
+    fixturesCache = cached.fixtures;
+    return fixturesCache;
+  }
+
+  // 2) Live CSV (Google Sheet)
+  try {
+    const fixtures = await fetchFixturesFromCSV();
+    if (Array.isArray(fixtures) && fixtures.length) {
+      fixturesCache = fixtures;
+      saveCachedCSVFixtures(fixturesCache);
+      return fixturesCache;
+    }
+  } catch (e) {
+    // swallow + fall through to embedded/imported
+  }
+
+  // 3) Embedded JSON in index.html (offline + SW-safe)
   try {
     const el = document.getElementById("fixturesData");
     if (el && el.textContent) {
@@ -1805,7 +1958,7 @@ async function loadFixturesData() {
     }
   } catch(e) {}
 
-  // Fallback: imported fixtures from localStorage
+  // 4) Imported fixtures from localStorage
   try {
     const imported = getImportedFixtures();
     if (Array.isArray(imported) && imported.length) {
