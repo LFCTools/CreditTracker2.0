@@ -667,6 +667,21 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       
       </section>
     </section>
+/* H/A right-side tag styling */
+.venueTag{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  border:1px solid rgba(255,255,255,.12);
+}
+
+/* Colour ONLY the H/A tag */
+.venueTag.home{ background: rgba(227,27,35,.90); color:#fff; }   /* Red for H */
+.venueTag.away{ background: rgba(20,184,166,.90); color:#042f2e; } /* Teal for A */
 
 <!-- Support & Feedback -->
 <dialog id="supportModal" class="modal hidden">
@@ -1990,7 +2005,7 @@ function fixtureRow(f) {
         <div class="itemTitle">${opp}</div>
         <div class="hint">${when}${time} • ${comp} • ${ha}</div>
       </div>
-      <div class="pill">${ha}</div>
+     <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
     </div>
   `;
   el.addEventListener("click", () => prefillFromFixture(f));
@@ -2066,7 +2081,7 @@ const _trackedKeys = new Set(_matches.map(m => `${(m.matchDate||"")}|${(m.compet
               <div class="itemTitle">${opp}</div>
               <div class="hint">${when}${time} • ${comp} • ${ha}</div>
             </div>
-            <div class="pill">${ha}</div>
+           <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
           </div>
         </div>
       `;
