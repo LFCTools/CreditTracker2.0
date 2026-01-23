@@ -667,21 +667,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       
       </section>
     </section>
-/* H/A right-side tag styling */
-.venueTag{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:34px;
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:900;
-  border:1px solid rgba(255,255,255,.12);
-}
-
-/* Colour ONLY the H/A tag */
-.venueTag.home{ background: rgba(227,27,35,.90); color:#fff; }   /* Red for H */
-.venueTag.away{ background: rgba(20,184,166,.90); color:#042f2e; } /* Teal for A */
 
 <!-- Support & Feedback -->
 <dialog id="supportModal" class="modal hidden">
@@ -712,6 +697,34 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   <span>📝 Give feedback</span>
   <span id="feedbackArrow">▸</span>
 </button>
+    
+/* Right-side H/A pill */
+.pill{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: var(--chip);
+  font-weight:900;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+}
+
+/* Only colour the H/A pill */
+.pill.ha-home{
+  background: rgba(227,27,35,.90);
+  color:#fff;
+  border-color: rgba(227,27,35,.55);
+}
+
+.pill.ha-away{
+  background: rgba(20,184,166,.90);
+  color:#042f2e;
+  border-color: rgba(20,184,166,.55);
+}
+
 
 <div id="feedbackPanel" class="feedbackPanel hidden">
 <div class="formEmbedWrap">
