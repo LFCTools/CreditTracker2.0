@@ -1641,20 +1641,18 @@ onEl("btnCloseSupport","click", closeSupport);
 onEl("btnBmac","click", ()=> window.open("https://buymeacoffee.com/TicketHelpLFC", "_blank", "noopener"));
 }
 
-function init() {
-  if (window.__THLFC_INITED) return;
-  window.__THLFC_INITED = true;
-  load();
-  setupPWA();
-  bindEvents();
-  try { bindFixturesControls(); } catch(e) {}
-  clearForm();
-  renderAll();
-  setView("dash");
+async function init() {
+  // ALWAYS load the latest fixtures from your Google Sheet
+  const fixtures = await fetchFixturesFromCsv();
 
-  if (!state.data.accounts || state.data.accounts.length === 0) {
-    setView("setup");
-    renderSetupNames();
+  // Optional: store globally if your app relies on this
+  window.__FIXTURES__ = fixtures;
+
+  // Render fixtures using your existing UI builder
+  renderFixtures(fixtures);
+}
+document.addEventListener("DOMContentLoaded", init);
+
   
 }
 }
