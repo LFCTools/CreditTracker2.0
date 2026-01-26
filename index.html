@@ -461,6 +461,30 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   overflow-x:auto;
   gap:8px;
 }
+.infoPage{
+  font-size:15px;
+  line-height:1.6;
+}
+.infoPage h1{
+  font-size:20px;
+  font-weight:800;
+  margin:0 0 14px;
+}
+.infoPage h2{
+  font-size:16px;
+  font-weight:700;
+  margin:18px 0 0;
+}
+.infoPage ul{
+  margin:8px 0 0 20px;
+  padding:0;
+  list-style:disc;
+}
+.infoPage p{
+  margin-top:14px;
+  font-size:13px;
+  color:var(--muted);
+}
 .inlineFields{
   display:flex;
   gap:10px;
@@ -487,6 +511,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       </div>
     </div>
     <div class="headerActions">
+      <button id="btnInfo" class="btn ghost">ℹ️ Info</button>
       <button id="btnSupport" class="btn ghost">💬 Support</button>
       <button id="btnInstall" class="btn ghost" hidden>⬇️ Install</button>
     </div>
@@ -764,6 +789,57 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 </div>
       
       </section>
+    </section>
+
+    <!-- Info -->
+    <section id="infoPage" class="view hidden infoPage">
+      <h1>ℹ️ How to Use the Credit Tracker</h1>
+
+      <h2>📱 Adding an Account</h2>
+      <ul>
+        <li>Tap the <strong>Add Account</strong> button on the home screen.</li>
+        <li>Enter your account name (e.g., Main, Dad, Partner, Friend).</li>
+        <li>Choose your credit type (Season, Cup, AutoCup etc.).</li>
+        <li>Save to start tracking fixtures for that account.</li>
+      </ul>
+
+      <h2>📤 Exporting Your Data</h2>
+      <ul>
+        <li>Go to <strong>Settings</strong> → <strong>Backup & Export</strong>.</li>
+        <li>Tap <strong>Export</strong> to download a .json file containing your accounts, credits and saved fixtures.</li>
+        <li>Keep this file safe – you’ll need it if you change phone or reinstall the app.</li>
+      </ul>
+
+      <h2>📥 Importing Data</h2>
+      <ul>
+        <li>Go to <strong>Settings</strong> → <strong>Backup & Export</strong>.</li>
+        <li>Select <strong>Import</strong> and choose a previously exported .json file.</li>
+        <li>Your accounts and fixtures will be restored instantly.</li>
+      </ul>
+
+      <h2>🎫 Using the Matches Screen</h2>
+      <ul>
+        <li>View every match you have added across all accounts.</li>
+        <li>Search by opponent or notes using the search bar.</li>
+        <li>Sort by <strong>Match Date</strong> or <strong>Date Added</strong>.</li>
+        <li>Filter by venue (H/A), competition (PL/UCL/FAC/LC), or credit type.</li>
+      </ul>
+
+      <h2>📅 Using the Fixtures Tab</h2>
+      <ul>
+        <li>Shows all upcoming Liverpool fixtures.</li>
+        <li>Tap any match to add it instantly to one of your accounts.</li>
+        <li>Fixtures automatically update when new dates are announced.</li>
+      </ul>
+
+      <h2>➕ The Add Button</h2>
+      <ul>
+        <li>Tap the <strong>+</strong> button to manually add a match to an account.</li>
+        <li>Select opponent, date, venue, competition and credit type.</li>
+        <li>Ideal for historic matches or adding missing games.</li>
+      </ul>
+
+      <p>Built for Liverpool supporters. Completely free. YNWA 🔴</p>
     </section>
 
 <!-- Support & Feedback -->
@@ -1133,6 +1209,7 @@ function setView(viewName) {
   $("viewDash").classList.toggle("hidden", viewName !== "dash");
   $("viewMatches").classList.toggle("hidden", viewName !== "matches");
   $("viewAdd").classList.toggle("hidden", viewName !== "add");
+  $("infoPage").classList.toggle("hidden", viewName !== "info");
   if (viewName === "fixtures") { setTimeout(() => { bindFixturesControls(); renderFixtures(); }, 0); }
   if (viewName === "setup") { setTimeout(() => { try{ populateAllSeasonSelects(); }catch(e){} }, 0); }
   $("viewFixtures").classList.toggle("hidden", viewName !== "fixtures");
@@ -1738,6 +1815,7 @@ onEl("btnSettings","click", openSettings);
 onEl("btnSupport","click", openSupport);
 onEl("btnCloseSupport","click", closeSupport);
 onEl("btnBmac","click", ()=> window.open("https://buymeacoffee.com/lfctools", "_blank", "noopener"));
+onEl("btnInfo","click", () => setView("info"));
 }
 
 function init() {
