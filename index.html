@@ -765,14 +765,21 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
           </div>
           <div>
             <div class="fieldLabel">Filter</div>
-            <select id="fixtureComp" class="select">
-              <option value="" selected>All competitions</option>
-              <option value="PL">PL</option>
-              <option value="UCL">UCL</option>
-              <option value="FAC">FA Cup</option>
-              <option value="LC">League Cup</option>
-              <option value="OTHER">Other</option>
-            </select>
+            <div class="row gap wrap">
+              <select id="fixtureComp" class="select grow">
+                <option value="" selected>All competitions</option>
+                <option value="PL">PL</option>
+                <option value="UCL">UCL</option>
+                <option value="FAC">FA Cup</option>
+                <option value="LC">League Cup</option>
+                <option value="OTHER">Other</option>
+              </select>
+              <select id="fixtureHA" class="select grow">
+                <option value="" selected>H/A</option>
+                <option value="H">Home</option>
+                <option value="A">Away</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -2188,8 +2195,10 @@ async function renderFixtures() {
 
     const showSel = document.getElementById("fixtureShow");
     const compSel = document.getElementById("fixtureComp");
+    const haSel = document.getElementById("fixtureHA");
     const show = showSel ? showSel.value : "upcoming";
     const compFilter = compSel ? compSel.value : "";
+    const haFilter = haSel ? haSel.value : "";
 
     const data = (await loadFixturesData()).slice();
     if (countEl) countEl.textContent = `Loaded ${data.length} fixtures…`;
@@ -2199,6 +2208,7 @@ async function renderFixtures() {
 
     let filtered = data.filter(f => {
       if (compFilter && f.competition !== compFilter) return false;
+      if (haFilter && (f.venue || "H") !== haFilter) return false;
       const raw = (f.date || (f.datetime_utc||""));
       const d = parseYMD((raw || "").slice(0,10));
       if (!d) return false;
@@ -2321,9 +2331,11 @@ function showToast(msg){
 (function(){
   const fs = document.getElementById("fixtureShow");
   const fc = document.getElementById("fixtureComp");
+  const fh = document.getElementById("fixtureHA");
   const fr = document.getElementById("btnReloadFixtures");
   if (fs) fs.addEventListener("change", renderFixtures);
   if (fc) fc.addEventListener("change", renderFixtures);
+  if (fh) fh.addEventListener("change", renderFixtures);
   if (fr) fr.addEventListener("click", reloadFixturesHard);
   const clr = document.getElementById("btnClearFixtures");
   if (clr) clr.addEventListener("click", ()=>{ setImportedFixtures([]); fixturesCache=null; try{showToast("Cleared imported fixtures");}catch(e){} renderFixtures(); });
@@ -2441,9 +2453,11 @@ async function reloadFixturesHard(){
 function bindFixturesControls(){
   const fs = document.getElementById("fixtureShow");
   const fc = document.getElementById("fixtureComp");
+  const fh = document.getElementById("fixtureHA");
   const fr = document.getElementById("btnReloadFixtures");
   if (fs) fs.onchange = () => renderFixtures();
   if (fc) fc.onchange = () => renderFixtures();
+  if (fh) fh.onchange = () => renderFixtures();
   if (fr) fr.onclick = reloadFixturesHard;
 }
 
