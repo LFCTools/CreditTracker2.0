@@ -448,20 +448,28 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
 }
 .backupCard .icon{
-  width:16px  height:16px;
+  width:16px;
+  height:16px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   font-size:14px;
 }
-<<<<<<< ours
-=======
+
 .backupCard .row{
   flex-wrap:nowrap;
   overflow-x:auto;
   gap:8px;
 }
->>>>>>> theirs
+.inlineFields{
+  display:flex;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+.inlineFields > div{
+  flex:1;
+  min-width:0;
+}
 </style>
 </head>
 <body>
@@ -522,7 +530,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
       <section class="card">
         <div class="label">👥 Accounts</div>
-        <div class="grid2">
+         <div class="inlineFields">
           <div>
             <div class="fieldLabel">How many accounts?</div>
             <input id="setupCount" class="input" type="number" min="1" max="10" value="1" />
