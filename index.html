@@ -15,17 +15,17 @@
   <link rel="stylesheet" href="styles.css" />
 <style>
 :root{
-  --bg:#0a0a0b;
-  --card:#111218;
-  --card-strong:#161821;
-  --muted:#a1a8b5;
+  --bg:#0a0a0a;
+  --card:#121212;
+  --card-strong:#1a1a1a;
+  --muted:#9a9a9a;
   --text:#f5f5f7;
-  --border:#21242e;
+  --border:#222222;
   --accent:#e31b23;
   --accent-soft: rgba(227,27,35,.18);
   --good:#2ecc71;
   --bad:#ff4d4d;
-  --chip:#181a22;
+  --chip:#1b1b1b;
   --shadow: 0 18px 40px rgba(0,0,0,.45);
   --glow: 0 0 0 1px rgba(255,255,255,.035), 0 12px 34px rgba(0,0,0,.45);
 }
@@ -34,7 +34,7 @@
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: radial-gradient(circle at top, rgba(227,27,35,.08), transparent 45%), var(--bg);
+  background: var(--bg);
   color:var(--text);
   letter-spacing: 0.1px;
 }
@@ -80,7 +80,7 @@ body{
   position: sticky;
   top: 64px;
   z-index: 9;
-  background: rgba(11,12,16,.9);
+  background: rgba(12,12,12,.92);
   padding: 8px 0;
   backdrop-filter: blur(10px);
 }
@@ -113,7 +113,7 @@ body{
   padding:10px 10px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,.08);
-  background:rgba(12,14,20,.75);
+  background:rgba(15,15,15,.8);
   color:var(--text);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
@@ -154,7 +154,7 @@ body{
   border:1px solid rgba(255,255,255,.06);
   border-radius:16px;
   padding:12px;
-  background:rgba(12,14,20,.7);
+  background:rgba(16,16,16,.82);
   box-shadow: 0 10px 18px rgba(0,0,0,.25);
 }
 
@@ -203,7 +203,7 @@ body{
 
 .breakdownTable{width:100%; border-collapse:separate; border-spacing:0 8px;}
 .breakdownTable th{color:var(--muted); font-size:12px; text-align:left; font-weight:800; padding:0 8px 6px;}
-.breakdownTable td{background:rgba(12,14,20,.7); border:1px solid rgba(255,255,255,.06); padding:10px 8px;}
+.breakdownTable td{background:rgba(16,16,16,.82); border:1px solid rgba(255,255,255,.06); padding:10px 8px;}
 .breakdownTable td:first-child{border-top-left-radius:12px; border-bottom-left-radius:12px;}
 .breakdownTable td:last-child{border-top-right-radius:12px; border-bottom-right-radius:12px; text-align:right; font-weight:900;}
 .breakdownPill{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-size:12px; font-weight:800;}
