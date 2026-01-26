@@ -1,5 +1,5 @@
 diff --git a/index.html b/index.html
-index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..b60c4ebb7b9926bd66746c135b3899a392b3f9bf 100644
+index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610ef39bef7 100644
 --- a/index.html
 +++ b/index.html
 @@ -1,236 +1,263 @@
@@ -303,3 +303,139 @@ index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..b60c4ebb7b9926bd66746c135b3899a3
    border-radius:12px;
  }
  .btn.ghost.sm{ padding:8px 10px; }
+@@ -381,50 +408,73 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
+   font-weight:900;
+   font-size:12px;
+   display:inline-flex;
+   align-items:center;
+   justify-content:center;
+   min-width:34px;
+ }
+ 
+ /* Only colour the H/A pill */
+ .pill.ha-home{
+   background: rgba(227,27,35,.90);
+   color:#fff;
+   border-color: rgba(227,27,35,.55);
+ }
+ 
+ .pill.ha-away{
+   background: rgba(20,184,166,.90);
+   color:#042f2e;
+   border-color: rgba(20,184,166,.55);
+ }
+ 
+ /* Ensure title wraps nicely without pushing credit */
+ .fixtureTitle{
+   word-break:break-word;
+ }
++
++.backupCard{
++  padding:10px;
++}
++.backupCard .label{
++  font-size:13px;
++}
++.backupCard .hint{
++  font-size:11px;
++}
++.backupCard .btn{
++  padding:8px 10px;
++  font-size:13px;
++  border-radius:12px;
++}
++.backupCard .icon{
++  width:16px;
++  height:16px;
++  display:inline-flex;
++  align-items:center;
++  justify-content:center;
++  font-size:14px;
++}
+ </style>
+ </head>
+ <body>
+   <header class="topbar">
+     <div class="brand">
+       <img class="brandLogo" src="icon.svg" alt="TicketHelpLFC" />
+       <div>
+         <div class="title">LFC Tools</div>
+         <div class="subtitle">Credit Tracker</div>
+       </div>
+     </div>
+     <div class="headerActions">
+       <button id="btnSupport" class="btn ghost">💬 Support</button>
+       <button id="btnInstall" class="btn ghost" hidden>⬇️ Install</button>
+     </div>
+   </header>
+ 
+   <main class="container">
+     <!-- Season bar -->
+     <section class="card acctBar">
+       <div class="acctBarFields">
+         <div class="acctField">
+           <div class="label">👤 Account</div>
+           <select id="accountSelect" class="select"></select>
+         </div>
+@@ -477,57 +527,57 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
+         <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
+ <div class="hint" style="margin-top:10px;">Enter names below. AutoCup is saved per account *and per season*.</div>
+         <div id="setupNames" class="list" style="margin-top:10px;"></div>
+ 
+         <div class="row gap wrap" style="margin-top:14px;">
+           <button id="btnSetupCreate" class="btn primary">🟢 Save Account </button>
+         </div>
+       </section>
+     </section>
+ 
+     <!-- Dashboard -->
+     <section id="viewDash" class="view">
+ 
+       <!-- Per-competition credits first -->
+       <section class="card">
+         <div class="row space-between">
+           <div>
+             <div class="label">🏆 Credits by Competition</div>
+             <div class="hint">Home (H) + Away (A) tracked separately. Cup comps show “AutoCup” if enabled for this account.</div>
+           </div>
+         </div>
+         <div id="compBreakdown" class="breakdown"></div>
+       </section>
+ 
+ 
+-<section class="card">
++<section class="card backupCard">
+   <div class="label">📦 Backups</div>
+   <div class="row gap wrap">
+-    <button id="btnExportJSON" class="btn">📤 Export JSON</button>
+-    <button id="btnExportCSV" class="btn">📤 Export CSV</button>
++    <button id="btnExportJSON" class="btn"><span class="icon">📤</span> Export JSON</button>
++    <button id="btnExportCSV" class="btn"><span class="icon">📤</span> Export CSV</button>
+     <label class="btn fileBtn">
+-      📥 Import JSON
++      <span class="icon">📥</span> Import JSON
+       <input id="importFile" type="file" accept="application/json" hidden />
+     </label>
+   </div>
+   <div class="hint">“JSON” is best for restoring exactly. “CSV” is for spreadsheets.</div>
+ </section>
+ </section>
+ 
+     <!-- Matches -->
+     <section id="viewMatches" class="view hidden">
+       <section class="card">
+         <div class="row wrap gap">
+           <input id="searchInput" class="input grow" placeholder="Search opponent / notes…" />
+           <select id="matchSort" class="select">
+             <option value="matchDate" selected>Sort: Match date</option>
+             <option value="dateAdded">Sort: Date added</option>
+           </select>
+           <select id="filterVenue" class="select">
+             <option value="">Venue: All</option>
+             <option value="H">Home (H)</option>
+             <option value="A">Away (A)</option>
+           </select>
+           <select id="filterComp" class="select">
+             <option value="">Comp: All</option>
+             <option value="PL">PL</option>
+             <option value="UCL">UCL</option>
