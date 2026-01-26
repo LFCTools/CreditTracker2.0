@@ -430,6 +430,29 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 .fixtureTitle{
   word-break:break-word;
 }
+
+.backupCard{
+  padding:10px;
+}
+.backupCard .label{
+  font-size:13px;
+}
+.backupCard .hint{
+  font-size:11px;
+}
+.backupCard .btn{
+  padding:8px 10px;
+  font-size:13px;
+  border-radius:12px;
+}
+.backupCard .icon{
+  width:16px;
+  height:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+}
 </style>
 </head>
 <body>
@@ -526,13 +549,13 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       </section>
 
 
-<section class="card">
+<section class="card backupCard">
   <div class="label">📦 Backups</div>
   <div class="row gap wrap">
-    <button id="btnExportJSON" class="btn">📤 Export JSON</button>
-    <button id="btnExportCSV" class="btn">📤 Export CSV</button>
+    <button id="btnExportJSON" class="btn"><span class="icon">📤</span> Export JSON</button>
+    <button id="btnExportCSV" class="btn"><span class="icon">📤</span> Export CSV</button>
     <label class="btn fileBtn">
-      📥 Import JSON
+      <span class="icon">📥</span> Import JSON
       <input id="importFile" type="file" accept="application/json" hidden />
     </label>
   </div>
