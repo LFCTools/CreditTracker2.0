@@ -516,6 +516,13 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   </header>
 
   <main class="container">
+    <nav class="tabs">
+      <button class="tab active" data-view="dash">🏠 Dashboard</button>
+      <button class="tab" data-view="matches">📋 Matches</button>
+      <button class="tab" data-view="fixtures">📅 Fixtures</button>
+      <button class="tab" data-view="add">➕ Add</button>
+    </nav>
+
     <!-- Season bar -->
     <section class="card acctBar">
       <div class="acctBarFields">
@@ -530,20 +537,12 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
         </div>
       </div>
 
-      <div class="acctBarActions">
-        <button id="btnAddAccount" class="btn">➕ Click to track account - add details below 🔴</button>
-        <button type="button" id="btnEditAccount" class="btn">✏️ Edit</button>
-        <button type="button" id="btnDeleteAccount" class="btn danger">🗑️ Delete</button>
-</div>
+      <div id="acctActions" class="acctBarActions">
+        <button id="btnAddAccount" class="btn sm">➕ Add Account</button>
+        <button type="button" id="btnEditAccount" class="btn sm">✏️ Edit</button>
+        <button type="button" id="btnDeleteAccount" class="btn danger sm">🗑️ Delete</button>
+      </div>
     </section>
-
-    <!-- Views -->
-    <nav class="tabs">
-      <button class="tab active" data-view="dash">🏠 Dashboard</button>
-      <button class="tab" data-view="matches">📋 Matches</button>
-      <button class="tab" data-view="fixtures">📅 Fixtures</button>
-      <button class="tab" data-view="add">➕ Add</button>
-    </nav>
 
 
     <!-- Setup (no popup) -->
@@ -1206,6 +1205,11 @@ function badgeForAction(m) {
 function setView(viewName) {
   const tabs = document.querySelectorAll(".tab");
   tabs.forEach(t => t.classList.toggle("active", t.dataset.view === viewName));
+
+  const acctActions = $("acctActions");
+  if (acctActions) {
+    acctActions.classList.toggle("hidden", viewName !== "dash");
+  }
 
   $("viewSetup").classList.toggle("hidden", viewName !== "setup");
   $("viewDash").classList.toggle("hidden", viewName !== "dash");
