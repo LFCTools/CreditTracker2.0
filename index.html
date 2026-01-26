@@ -15,38 +15,31 @@
   <link rel="stylesheet" href="styles.css" />
 <style>
 :root{
-  --bg:#0b0f1a;
-  --bg-elev:#0f1424;
-  --card:#131a2b;
-  --muted:#9aa3b2;
-  --text:#f5f7fb;
-  --border:rgba(148,163,184,.18);
-  --accent:#ff4d5a;
-  --good:#38d996;
-  --bad:#ff6b6b;
-  --chip:#101827;
-  --shadow:0 16px 40px rgba(8,12,24,.45);
-  --glow:0 0 0 1px rgba(255,255,255,.04), 0 8px 30px rgba(255,77,90,.18);
+  --bg:#0b0b0b;
+  --card:#141414;
+  --muted:#9aa0a6;
+  --text:#f2f2f2;
+  --border:#242424;
+  --accent:#e31b23;
+  --good:#2ecc71;
+  --bad:#ff4d4d;
+  --chip:#1b1b1b;
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family: "Inter", "SF Pro Display", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(circle at top, rgba(255,77,90,.12), transparent 45%),
-    radial-gradient(circle at 20% 20%, rgba(56,217,150,.1), transparent 40%),
-    var(--bg);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:var(--bg);
   color:var(--text);
-  -webkit-font-smoothing:antialiased;
 }
 
 .topbar{
   position:sticky; top:0;
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 14px;
-  border-bottom:1px solid rgba(148,163,184,.2);
-  background:rgba(11,15,26,.9);
+  border-bottom:1px solid var(--border);
+  background:rgba(11,11,11,.92);
   backdrop-filter: blur(10px);
   z-index:10;
 }
@@ -61,10 +54,9 @@ body{
 .card{
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:14px;
   padding:14px;
   margin-bottom:12px;
-  box-shadow:var(--shadow);
 }
 
 .row{display:flex; align-items:center}
@@ -82,15 +74,14 @@ body{
 }
 .tab{
   flex:1;
-  border-radius:14px;
+  border-radius:12px;
   border:1px solid var(--border);
-  background:rgba(15,20,36,.6);
+  background:transparent;
   color:var(--text);
   padding:10px 10px;
   font-weight:700;
-  transition:all .2s ease;
 }
-.tab.active{border-color:rgba(255,77,90,.6); background:rgba(255,77,90,.18); box-shadow:var(--glow)}
+.tab.active{border-color:rgba(227,27,35,.6); background:rgba(227,27,35,.12)}
 
 .grid3{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px}
 .grid2{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px}
@@ -106,16 +97,10 @@ body{
 .input,.select,.textarea{
   width:100%;
   padding:10px 10px;
-  border-radius:14px;
-  border:1px solid rgba(148,163,184,.25);
-  background:rgba(8,12,24,.6);
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#0f0f0f;
   color:var(--text);
-  transition:border-color .2s ease, box-shadow .2s ease;
-}
-.input:focus,.select:focus,.textarea:focus{
-  outline:none;
-  border-color:rgba(255,77,90,.7);
-  box-shadow:0 0 0 3px rgba(255,77,90,.15);
 }
 
 .textarea{resize:vertical}
@@ -124,23 +109,20 @@ body{
 
 .btn{
   border:1px solid var(--border);
-  background:linear-gradient(135deg, rgba(18,24,40,.8), rgba(14,18,32,.8));
+  background:#101010;
   color:var(--text);
   padding:10px 12px;
-  border-radius:14px;
+  border-radius:12px;
   font-weight:800;
   cursor:pointer;
-  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.btn:hover{transform:translateY(-1px); box-shadow:var(--shadow)}
-.btn:active{transform:translateY(0)}
 .btn.primary{
-  border-color: rgba(56,217,150,.6);
-  background: rgba(56,217,150,.16);
+  border-color: rgba(46,204,113,.5);
+  background: rgba(46,204,113,.12);
 }
 .btn.danger{
-  border-color: rgba(255,107,107,.6);
-  background: rgba(255,107,107,.16);
+  border-color: rgba(255,77,77,.5);
+  background: rgba(255,77,77,.12);
 }
 .btn.ghost{background:transparent}
 .fileBtn{display:inline-flex; align-items:center; gap:6px}
@@ -148,10 +130,9 @@ body{
 .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
 .item{
   border:1px solid var(--border);
-  border-radius:16px;
+  border-radius:14px;
   padding:12px;
-  background:rgba(8,12,24,.6);
-  box-shadow:0 10px 25px rgba(8,12,24,.35);
+  background:#0f0f0f;
 }
 
 .item.fixtureTracked{
@@ -167,25 +148,24 @@ body{
   border-radius:999px;
   font-size:12px;
   border:1px solid var(--border);
-  background: rgba(16,24,39,.85);
+  background: var(--chip);
 }
-.badge.good{border-color: rgba(56,217,150,.6)}
-.badge.bad{border-color: rgba(255,107,107,.6)}
-.badge.neutral{border-color: rgba(148,163,184,.45)}
-.badge.red{border-color: rgba(255,77,90,.6)}
+.badge.good{border-color: rgba(46,204,113,.5)}
+.badge.bad{border-color: rgba(255,77,77,.5)}
+.badge.neutral{border-color: rgba(154,160,166,.45)}
+.badge.red{border-color: rgba(227,27,35,.55)}
 
 .chips{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
 .chip{
   border:1px solid var(--border);
-  background: rgba(16,24,39,.85);
+  background: var(--chip);
   color: var(--text);
   padding:8px 10px;
   border-radius:999px;
   font-weight:800;
   cursor:pointer;
-  transition:all .2s ease;
 }
-.chip.active{border-color: rgba(255,77,90,.6); background: rgba(255,77,90,.18); box-shadow:var(--glow)}
+.chip.active{border-color: rgba(227,27,35,.55); background: rgba(227,27,35,.12)}
 
 .hidden{display:none !important}
 .empty{color:var(--muted); padding:10px 0}
@@ -198,13 +178,12 @@ body{
 
 .breakdownTable{width:100%; border-collapse:separate; border-spacing:0 8px;}
 .breakdownTable th{color:var(--muted); font-size:12px; text-align:left; font-weight:800; padding:0 8px 6px;}
-.breakdownTable td{background:rgba(8,12,24,.6); border:1px solid var(--border); padding:10px 8px;}
+.breakdownTable td{background:#0f0f0f; border:1px solid var(--border); padding:10px 8px;}
 .breakdownTable td:first-child{border-top-left-radius:12px; border-bottom-left-radius:12px;}
 .breakdownTable td:last-child{border-top-right-radius:12px; border-bottom-right-radius:12px; text-align:right; font-weight:900;}
-.breakdownPill{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:rgba(16,24,39,.85); font-size:12px; font-weight:800;}
-.breakdownPill.good{border-color: rgba(56,217,150,.6);}
-.breakdownPill.bad{border-color: rgba(255,107,107,.6);}
-.breakdownPill.neutral{border-color: rgba(148,163,184,.45);}
+.breakdownPill{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-size:12px; font-weight:800;}
+.breakdownPill.good{border-color: rgba(46,204,113,.5);}
+.breakdownPill.bad{border-color: rgba(255,77,77,.5);}
 
 
 
@@ -218,6 +197,13 @@ body{
 
 .stat.small{padding:12px}
 .statValue.small{font-size:26px}
+
+
+.breakdownTable{width:100%; border-collapse:collapse; margin-top:10px}
+.breakdownTable th,.breakdownTable td{padding:10px; border-bottom:1px solid var(--border); text-align:left}
+.breakdownPill{display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-weight:800; font-size:12px}
+.breakdownPill.good{border-color: rgba(46,204,113,.5); background: rgba(46,204,113,.12)}
+.breakdownPill.neutral{border-color: rgba(154,160,166,.45); background: rgba(154,160,166,.10)}
 
 
 .modal.hidden{display:none !important}
@@ -267,7 +253,7 @@ dialog.modal{
   width:min(560px, 94vw);
   max-height:90vh;
   overflow:hidden;
-  box-shadow: 0 20px 60px rgba(8,12,24,.7);
+  box-shadow: 0 20px 60px rgba(0,0,0,.55);
 }
 dialog.modal::backdrop{
   background: rgba(0,0,0,.72);
@@ -354,15 +340,14 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   align-items:center;
   width:100%;
   background: transparent;
-  border: 1px solid rgba(148,163,184,.2);
-  border-radius:16px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius:14px;
   padding:12px 14px;
   cursor:pointer;
   font-weight:700;
-  transition:all .2s ease;
 }
 .toggleRow:hover{
-  background: rgba(148,163,184,.08);
+  background: rgba(255,255,255,.04);
 }
 .feedbackPanel{
   margin-top:12px;
@@ -422,252 +407,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
-      <img class="brandLogo" src="icon.svg" alt="TicketHelpLFC" />
-      <div>
-        <div class="title">TicketHelpLFC</div>
-        <div class="subtitle">Credit Tracker</div>
-      </div>
-    </div>
-    <div class="headerActions">
-      <button id="btnSupport" class="btn ghost">💬 Support</button>
-      <button id="btnInstall" class="btn ghost" hidden>⬇️ Install</button>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- Season bar -->
-    <section class="card acctBar">
-      <div class="acctBarFields">
-        <div class="acctField">
-          <div class="label">👤 Account</div>
-          <select id="accountSelect" class="select"></select>
-        </div>
-
-        <div class="acctField">
-          <div class="label">📅 Season</div>
-          <select id="seasonSelect" class="select" data-role="season"></select>
-        </div>
-      </div>
-
-      <div class="acctBarPrimary">
-        <button id="btnAddAccount" class="btn full">➕ Add account to track</button>
-      </div>
-
-      <div class="acctBarActions">
-        <button type="button" id="btnEditAccount" class="btn sm">✏️ Edit</button>
-        <button type="button" id="btnDeleteAccount" class="btn danger sm">🗑️ Delete</button>
-</div>
-    </section>
-
-    <!-- Views -->
-    <nav class="tabs">
-      <button class="tab active" data-view="dash">🏠 Dashboard</button>
-      <button class="tab" data-view="matches">📋 Matches</button>
-      <button class="tab" data-view="fixtures">📅 Fixtures</button>
-      <button class="tab" data-view="add">➕ Add</button>
-    </nav>
-
-    <!-- Setup (no popup) -->
-    <section id="viewSetup" class="view hidden">
-      <section class="card">
-        <div class="label">🔴 Add account details below 🔴</div>
-        <div class="hint">Set up the accounts you want to track. Include AutoCup and Year, then click save.</div>
-      </section>
-
-      <section class="card">
-        <div class="label">👥 Accounts</div>
-        <div class="grid2">
-          <div>
-            <div class="fieldLabel">How many accounts?</div>
-            <input id="setupCount" class="input" type="number" min="1" max="10" value="1" />
-          </div>
-          <div>
-            <div class="fieldLabel">Season</div>
-            <select id="setupSeason" class="select" data-role="season"></select>
-          </div>
-        </div>
-
-        <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
-<div class="hint" style="margin-top:10px;">Enter names below. AutoCup is saved per account *and per season*.</div>
-        <div id="setupNames" class="list" style="margin-top:10px;"></div>
-
-        <div class="row gap wrap" style="margin-top:14px;">
-          <button id="btnSetupCreate" class="btn primary">🟢 Save Account </button>
-        </div>
-      </section>
-    </section>
-
-    <!-- Dashboard -->
-    <section id="viewDash" class="view">
-
-      <!-- Per-competition credits first -->
-      <section class="card">
-        <div class="row space-between">
-          <div>
-            <div class="label">🏆 Credits by Competition</div>
-            <div class="hint">Home (H) + Away (A) tracked separately. Cup comps show “AutoCup” if enabled for this account.</div>
-          </div>
-        </div>
-        <div id="compBreakdown" class="breakdown"></div>
-      </section>
-
-<section class="card">
-  <div class="label">📦 Backups</div>
-  <div class="row gap wrap">
-    <button id="btnExportJSON" class="btn">📤 Export JSON</button>
-    <button id="btnExportCSV" class="btn">📤 Export CSV</button>
-    <label class="btn fileBtn">
-      📥 Import JSON
-      <input id="importFile" type="file" accept="application/json" hidden />
-    </label>
-  </div>
-  <div class="hint">“JSON” is best for restoring exactly. “CSV” is for spreadsheets.</div>
-</section>
-</section>
-
-    <!-- Matches -->
-    <section id="viewMatches" class="view hidden">
-      <section class="card">
-        <div class="row wrap gap">
-          <input id="searchInput" class="input grow" placeholder="Search opponent / notes…" />
-          <select id="matchSort" class="select">
-            <option value="matchDate" selected>Sort: Match date</option>
-            <option value="dateAdded">Sort: Date added</option>
-          </select>
-          <select id="filterVenue" class="select">
-            <option value="">Venue: All</option>
-            <option value="H">Home (H)</option>
-            <option value="A">Away (A)</option>
-          </select>
-          <select id="filterComp" class="select">
-            <option value="">Comp: All</option>
-            <option value="PL">PL</option>
-            <option value="UCL">UCL</option>
-            <option value="FAC">FA Cup</option>
-            <option value="LC">League Cup</option>
-            <option value="OTHER">Other</option>
-          </select>
-          <select id="filterCredit" class="select">
-            <option value="">Credit: All</option>
-            <option value="yes">🟢 Yes</option>
-            <option value="no">🔴 No</option>
-            <option value="unsure">ℹ️ Unsure</option>
-          </select>
-        </div>
-      </section>
-      <section class="card">
-        <div id="matchesList" class="list"></div>
-        <div id="matchesEmpty" class="empty hidden">
-          🎟️ No matches yet — tap <strong>➕ Add</strong> to start tracking.
-        </div>
-      </section>
-    </section>
-
-    <!-- Add/Edit -->
-    <section id="viewAdd" class="view hidden">
-      <section class="card">
-        <div class="row space-between">
-          <div class="label">➕ Add / Edit match</div>
-          <button id="btnClearForm" class="btn ghost">🧹 Clear</button>
-        </div>
-
-        <form id="matchForm" class="form">
-          <input type="hidden" id="matchId" />
-
-          <div class="grid2">
-            <div>
-              <div class="fieldLabel">Opponent</div>
-              <input id="opponent" class="input" placeholder="e.g. Arsenal" required />
-            </div>
-            <div>
-              <div class="fieldLabel">Date</div>
-              <input id="matchDate" class="input" type="date" required />
-            </div>
-
-            <div>
-              <div class="fieldLabel">Home/Away</div>
-              <select id="venue" class="select" required>
-                <option value="H">Home (H)</option>
-                <option value="A">Away (A)</option>
-              </select>
-            </div>
-
-            <div>
-              <div class="fieldLabel">Competition</div>
-              <select id="competition" class="select" required>
-                <option value="PL">PL</option>
-                <option value="UCL">UCL</option>
-                <option value="FAC">FA Cup</option>
-                <option value="LC">League Cup</option>
-                <option value="OTHER">Other</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="grid2">
-            
-            <div>
-              <div class="fieldLabel">Ticket</div>
-              <select id="ticketAction" class="select">
-                <option value="credit">Credit</option>
-                <option value="season_return">Season Ticket Return</option>
-                <option value="fwd_me_credit">Forwarded to me (with credit)</option>
-                <option value="fwd_me_nocredit">Forwarded to me (no credit)</option>
-                <option value="hosp_credit">Hospitality (credit)</option>
-                <option value="hosp_nocredit">Hospitality (no credit)</option>
-                <option value="scan_nocredit">Scan in (no credit)</option>
-              </select>
-            </div>
-
-          </div>
-
-          <div>
-            <div class="fieldLabel">Credit outcome</div>
-            <div class="chips" role="group" aria-label="Credit outcome">
-<input type="hidden" id="creditCredit" value="unsure">
-
-              <button type="button" class="chip" data-credit="yes">🟢 Credit</button>
-              <button type="button" class="chip" data-credit="no">🔴 No credit</button>
-              <button type="button" class="chip active" data-credit="unsure">ℹ️ Unsure</button>
-            </div>
-            <input type="hidden" id="creditCredit" value="unsure" />
-          </div>
-
-          <div>
-            <div class="fieldLabel">Ticket cost (optional)</div>
-            <input id="amountPaid" class="input" type="number" min="0" step="0.01" placeholder="e.g. 43.85" />
-            <div class="hint">Leave blank if unknown. Stored locally.</div>
-          </div>
-
-          <div>
-            <div class="fieldLabel">Notes (optional)</div>
-            <textarea id="notes" class="textarea" rows="3" placeholder="Anything worth remembering…"></textarea>
-          </div>
-
-          <div class="row space-between">
-            <button type="submit" class="btn primary">🟢 Save match</button>
-            <button type="button" id="btnDelete" class="btn danger" hidden>❌ Delete</button>
-          </div>
-
-          <div class="hint">
-            🔒 Stored on your device. Not affiliated with Liverpool FC.
-          </div>
-        </form>
-      </section>
-    </section>
-
-    <!-- Settings modal -->
-
-    <!-- Fixtures -->
-    <section id="viewFixtures" class="view hidden">
-      <section class="card">
-        <div class="row space-between">
-         …(file continues unchanged)…
-      </section>
-    </section>
-  </main>
-  <footer class="buildFooter">YNader class="topbar">
     <div class="brand">
       <img class="brandLogo" src="icon.svg" alt="TicketHelpLFC" />
       <div>
@@ -2593,3 +2332,84 @@ if (typeof init === "function") {
   });
 }
 
+
+function editActiveAccount(){
+  const accId = activeAccountId();
+  const acc = state.data.accounts.find(a=>a.id===accId);
+  if(!acc){ alert("No account selected"); return; }
+  const newName = prompt("Account name:", acc.name || "");
+  if(newName === null) return;
+  acc.name = (newName || "").trim() || acc.name;
+
+  // Autocup toggles (per account)
+  const ac = getAutoCupForSeason(acc, activeSeasonId());
+  const seasonTxt = seasonLabel(activeSeasonId());
+  const lc = confirm(`AutoCup (HOME) — League Cup?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
+  const fac = confirm(`AutoCup (HOME) — FA Cup?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
+  const ucl = confirm(`AutoCup (HOME) — Champions League?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
+  setAutoCupForSeason(acc, activeSeasonId(), {LC:lc, FAC:fac, UCL:ucl});
+  acc.autoCup = {LC:lc, FAC:fac, UCL:ucl};
+
+  save();
+  renderAccountSelect();
+  renderAll();
+  showToast("Account updated");
+}
+
+function deleteActiveAccount(){
+  const accId = activeAccountId();
+  const acc = state.data.accounts.find(a=>a.id===accId);
+  if(!acc){ alert("No account selected"); return; }
+  if(state.data.accounts.length <= 1){
+    alert("You must have at least 1 account.");
+    return;
+  }
+  const ok = confirm(`Delete account "${acc.name}"?\nThis will also delete all tracked matches for this account.`);
+  if(!ok) return;
+
+  state.data.accounts = state.data.accounts.filter(a=>a.id!==accId);
+  state.data.matches = state.data.matches.filter(m=>m.accountId!==accId);
+
+  // Set new active account
+  state.data.activeAccountId = state.data.accounts[0]?.id || null;
+  save();
+  renderAccountSelect();
+  renderAll();
+  showToast("Account deleted");
+}
+
+
+
+
+
+
+
+
+function openSupport(){
+  const dlg = $("supportModal");
+  if (!dlg) return;
+  dlg.classList.remove("hidden");
+  if (dlg.showModal) dlg.showModal();
+  else dlg.setAttribute("open","");
+}
+function closeSupport(){
+  const dlg = $("supportModal");
+  if (!dlg) return;
+  try { dlg.close(); } catch(e) {}
+  dlg.classList.add("hidden");
+}
+
+
+onEl("btnToggleFeedback","click", ()=>{
+  const panel = $("feedbackPanel");
+  const arrow = $("feedbackArrow");
+  if (!panel || !arrow) return;
+  const open = panel.classList.toggle("hidden") === false;
+  arrow.textContent = open ? "▾" : "▸";
+});
+</script>
+
+
+  <footer class="buildFooter">YNWA</footer>
+</body>
+</html>
