@@ -1,5 +1,5 @@
 diff --git a/index.html b/index.html
-index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610ef39bef7 100644
+index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..f2470d30753a8ab2f09b8d11afe26f93e2d322db 100644
 --- a/index.html
 +++ b/index.html
 @@ -1,236 +1,263 @@
@@ -303,7 +303,7 @@ index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610
    border-radius:12px;
  }
  .btn.ghost.sm{ padding:8px 10px; }
-@@ -381,50 +408,73 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
+@@ -381,50 +408,79 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
    font-weight:900;
    font-size:12px;
    display:inline-flex;
@@ -343,6 +343,7 @@ index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610
 +  padding:8px 10px;
 +  font-size:13px;
 +  border-radius:12px;
++  white-space:nowrap;
 +}
 +.backupCard .icon{
 +  width:16px;
@@ -351,6 +352,11 @@ index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610
 +  align-items:center;
 +  justify-content:center;
 +  font-size:14px;
++}
++.backupCard .row{
++  flex-wrap:nowrap;
++  overflow-x:auto;
++  gap:8px;
 +}
  </style>
  </head>
@@ -377,7 +383,7 @@ index 10d6f925e7c6d743ada3fd8c9e914b8aff788150..a9c5b9d0a9ff75f7024548b15cc0f610
            <div class="label">👤 Account</div>
            <select id="accountSelect" class="select"></select>
          </div>
-@@ -477,57 +527,57 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
+@@ -477,57 +533,57 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
          <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
  <div class="hint" style="margin-top:10px;">Enter names below. AutoCup is saved per account *and per season*.</div>
          <div id="setupNames" class="list" style="margin-top:10px;"></div>
