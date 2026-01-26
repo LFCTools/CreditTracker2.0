@@ -33,10 +33,7 @@
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    radial-gradient(1200px 500px at 15% -10%, rgba(255,49,65,.15), transparent 60%),
-    radial-gradient(900px 400px at 95% 0%, rgba(46,204,113,.12), transparent 65%),
-    var(--bg);
+  background: var(--bg);
   color:var(--text);
   letter-spacing: 0.1px;
 }
@@ -893,6 +890,40 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       >Loading…</iframe>
     </div>
 </div>
+  </div>
+</dialog>
+
+<!-- Account settings -->
+<dialog id="accountSettingsModal" class="modal hidden">
+  <div class="modalInner">
+    <div class="modalHeader">
+      <div class="modalTitle">Account Settings</div>
+      <button type="button" class="btn ghost sm" id="btnCloseAccountSettings" aria-label="Close">✖</button>
+    </div>
+    <div class="hr"></div>
+    <div class="fieldLabel">Account name</div>
+    <input id="accountNameInput" class="input" placeholder="Account name" />
+    <div class="row gap wrap" style="margin-top:14px;">
+      <button type="button" class="btn primary" id="btnSaveAccountSettings">Save</button>
+      <button type="button" class="btn ghost" id="btnCancelAccountSettings">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="autoCupModal" class="modal hidden">
+  <div class="modalInner">
+    <div class="modalHeader">
+      <div class="modalTitle" id="autoCupTitle">AutoCup</div>
+      <button type="button" class="btn ghost sm" id="btnCloseAutoCup" aria-label="Close">✖</button>
+    </div>
+    <div class="hr"></div>
+    <div class="label" id="autoCupQuestion">AutoCup option</div>
+    <div class="hint" id="autoCupSeason">Season</div>
+    <div class="row gap wrap" style="margin-top:14px;">
+      <button type="button" class="btn primary" id="btnAutoCupYes">Yes</button>
+      <button type="button" class="btn" id="btnAutoCupNo">No</button>
+      <button type="button" class="btn ghost" id="btnAutoCupCancel">Cancel</button>
+    </div>
   </div>
 </dialog>
 </main>
@@ -2502,22 +2533,124 @@ if (typeof init === "function") {
 }
 
 
-function editActiveAccount(){
+function openAccountSettingsModal(acc){
+  return new Promise(resolve => {
+    const dlg = $("accountSettingsModal");
+    const input = $("accountNameInput");
+    const btnSave = $("btnSaveAccountSettings");
+    const btnCancel = $("btnCancelAccountSettings");
+    const btnClose = $("btnCloseAccountSettings");
+    if (!dlg || !input || !btnSave || !btnCancel || !btnClose) {
+      resolve({ name: (acc && acc.name) || "" });
+      return;
+    }
+
+    input.value = acc && acc.name ? acc.name : "";
+
+    const cleanup = (result) => {
+      btnSave.removeEventListener("click", onSave);
+      btnCancel.removeEventListener("click", onCancel);
+      btnClose.removeEventListener("click", onCancel);
+      dlg.removeEventListener("cancel", onCancel);
+      try { dlg.close(); } catch(e) {}
+      dlg.classList.add("hidden");
+      resolve(result);
+    };
+
+    const onSave = () => cleanup({ name: (input.value || "").trim() });
+    const onCancel = () => cleanup(null);
+
+    btnSave.addEventListener("click", onSave);
+    btnCancel.addEventListener("click", onCancel);
+    btnClose.addEventListener("click", onCancel);
+    dlg.addEventListener("cancel", onCancel);
+
+    dlg.classList.remove("hidden");
+    if (dlg.showModal) dlg.showModal();
+    else dlg.setAttribute("open","");
+    setTimeout(() => input.focus(), 0);
+  });
+}
+
+function openAutoCupPrompt(opts){
+  const { seasonTxt, competitionLabel } = opts || {};
+  return new Promise(resolve => {
+    const dlg = $("autoCupModal");
+    const title = $("autoCupTitle");
+    const question = $("autoCupQuestion");
+    const season = $("autoCupSeason");
+    const yesBtn = $("btnAutoCupYes");
+    const noBtn = $("btnAutoCupNo");
+    const cancelBtn = $("btnAutoCupCancel");
+    const closeBtn = $("btnCloseAutoCup");
+    if (!dlg || !title || !question || !season || !yesBtn || !noBtn || !cancelBtn || !closeBtn) {
+      resolve("cancel");
+      return;
+    }
+
+    title.textContent = "Account Settings";
+    question.textContent = `AutoCup (HOME) — ${competitionLabel}?`;
+    season.textContent = `Season ${seasonTxt}`;
+
+    const cleanup = (result) => {
+      yesBtn.removeEventListener("click", onYes);
+      noBtn.removeEventListener("click", onNo);
+      cancelBtn.removeEventListener("click", onCancel);
+      closeBtn.removeEventListener("click", onCancel);
+      dlg.removeEventListener("cancel", onCancel);
+      try { dlg.close(); } catch(e) {}
+      dlg.classList.add("hidden");
+      resolve(result);
+    };
+
+    const onYes = () => cleanup("yes");
+    const onNo = () => cleanup("no");
+    const onCancel = () => cleanup("cancel");
+
+    yesBtn.addEventListener("click", onYes);
+    noBtn.addEventListener("click", onNo);
+    cancelBtn.addEventListener("click", onCancel);
+    closeBtn.addEventListener("click", onCancel);
+    dlg.addEventListener("cancel", onCancel);
+
+    dlg.classList.remove("hidden");
+    if (dlg.showModal) dlg.showModal();
+    else dlg.setAttribute("open","");
+    setTimeout(() => yesBtn.focus(), 0);
+  });
+}
+
+function seasonLabelFromId(seasonId){
+  const match = String(seasonId || "").match(/^(\d{4})/);
+  if (!match) return String(seasonId || "");
+  const startYear = Number(match[1]);
+  if (!Number.isFinite(startYear)) return String(seasonId || "");
+  return seasonLabel(startYear % 100);
+}
+
+async function editActiveAccount(){
   const accId = activeAccountId();
   const acc = state.data.accounts.find(a=>a.id===accId);
   if(!acc){ alert("No account selected"); return; }
-  const newName = prompt("Account name:", acc.name || "");
-  if(newName === null) return;
-  acc.name = (newName || "").trim() || acc.name;
+  const accountResult = await openAccountSettingsModal(acc);
+  if(!accountResult) return;
+  const originalName = acc.name;
+  acc.name = accountResult.name || acc.name;
 
-  // Autocup toggles (per account)
-  const ac = getAutoCupForSeason(acc, activeSeasonId());
-  const seasonTxt = seasonLabel(activeSeasonId());
-  const lc = confirm(`AutoCup (HOME) — League Cup?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
-  const fac = confirm(`AutoCup (HOME) — FA Cup?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
-  const ucl = confirm(`AutoCup (HOME) — Champions League?\nSeason: ${seasonTxt}\n\nOK = Yes, Cancel = No`);
-  setAutoCupForSeason(acc, activeSeasonId(), {LC:lc, FAC:fac, UCL:ucl});
-  acc.autoCup = {LC:lc, FAC:fac, UCL:ucl};
+  const seasonTxt = seasonLabelFromId(activeSeasonId());
+  const lc = await openAutoCupPrompt({ seasonTxt, competitionLabel: "League Cup" });
+  if (lc === "cancel") { acc.name = originalName; return; }
+  const fac = await openAutoCupPrompt({ seasonTxt, competitionLabel: "FA Cup" });
+  if (fac === "cancel") { acc.name = originalName; return; }
+  const ucl = await openAutoCupPrompt({ seasonTxt, competitionLabel: "Champions League" });
+  if (ucl === "cancel") { acc.name = originalName; return; }
+
+  const lcYes = lc === "yes";
+  const facYes = fac === "yes";
+  const uclYes = ucl === "yes";
+
+  setAutoCupForSeason(acc, activeSeasonId(), {LC:lcYes, FAC:facYes, UCL:uclYes});
+  acc.autoCup = {LC:lcYes, FAC:facYes, UCL:uclYes};
 
   save();
   renderAccountSelect();
