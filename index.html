@@ -15,23 +15,30 @@
   <link rel="stylesheet" href="styles.css" />
 <style>
 :root{
-  --bg:#0b0b0b;
-  --card:#141414;
-  --muted:#9aa0a6;
-  --text:#f2f2f2;
-  --border:#242424;
-  --accent:#e31b23;
+  --bg:#0b0c0f;
+  --card:#151821;
+  --card-strong:#1a1f2b;
+  --muted:#98a2b3;
+  --text:#f5f7fb;
+  --border:#242a36;
+  --accent:#ff3141;
   --good:#2ecc71;
   --bad:#ff4d4d;
-  --chip:#1b1b1b;
+  --chip:#1d2230;
+  --shadow: 0 18px 40px rgba(0,0,0,.35);
+  --glow: 0 0 0 1px rgba(255,255,255,.04), 0 10px 30px rgba(0,0,0,.35);
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(1200px 500px at 15% -10%, rgba(255,49,65,.15), transparent 60%),
+    radial-gradient(900px 400px at 95% 0%, rgba(46,204,113,.12), transparent 65%),
+    var(--bg);
   color:var(--text);
+  letter-spacing: 0.1px;
 }
 
 .topbar{
@@ -39,7 +46,7 @@ body{
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 14px;
   border-bottom:1px solid var(--border);
-  background:rgba(11,11,11,.92);
+  background:rgba(11,12,16,.78);
   backdrop-filter: blur(10px);
   z-index:10;
 }
@@ -52,11 +59,12 @@ body{
 .container{max-width:980px; margin:0 auto; padding:14px}
 
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)) , var(--card);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:18px;
   padding:14px;
   margin-bottom:12px;
+  box-shadow: var(--glow);
 }
 
 .row{display:flex; align-items:center}
@@ -74,14 +82,16 @@ body{
 }
 .tab{
   flex:1;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:transparent;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.02);
   color:var(--text);
   padding:10px 10px;
   font-weight:700;
+  transition: all .2s ease;
 }
-.tab.active{border-color:rgba(227,27,35,.6); background:rgba(227,27,35,.12)}
+.tab.active{border-color:rgba(255,49,65,.6); background:rgba(255,49,65,.14); box-shadow: 0 10px 18px rgba(255,49,65,.12)}
+.tab:hover{transform: translateY(-1px)}
 
 .grid3{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px}
 .grid2{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px}
@@ -97,10 +107,16 @@ body{
 .input,.select,.textarea{
   width:100%;
   padding:10px 10px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:#0f0f0f;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(12,14,20,.75);
   color:var(--text);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.input:focus,.select:focus,.textarea:focus{
+  outline:none;
+  border-color: rgba(255,49,65,.55);
+  box-shadow: 0 0 0 3px rgba(255,49,65,.15);
 }
 
 .textarea{resize:vertical}
@@ -108,31 +124,34 @@ body{
 .fieldLabel{color:var(--muted); font-size:12px; margin:6px 0}
 
 .btn{
-  border:1px solid var(--border);
-  background:#101010;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(18,20,26,.8);
   color:var(--text);
   padding:10px 12px;
-  border-radius:12px;
+  border-radius:14px;
   font-weight:800;
   cursor:pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 .btn.primary{
-  border-color: rgba(46,204,113,.5);
-  background: rgba(46,204,113,.12);
+  border-color: rgba(46,204,113,.45);
+  background: linear-gradient(180deg, rgba(46,204,113,.18), rgba(46,204,113,.08));
 }
 .btn.danger{
-  border-color: rgba(255,77,77,.5);
-  background: rgba(255,77,77,.12);
+  border-color: rgba(255,77,77,.45);
+  background: linear-gradient(180deg, rgba(255,77,77,.18), rgba(255,77,77,.08));
 }
 .btn.ghost{background:transparent}
 .fileBtn{display:inline-flex; align-items:center; gap:6px}
+.btn:hover{transform: translateY(-1px); box-shadow: 0 12px 24px rgba(0,0,0,.3)}
 
 .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
 .item{
-  border:1px solid var(--border);
-  border-radius:14px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;
   padding:12px;
-  background:#0f0f0f;
+  background:rgba(12,14,20,.7);
+  box-shadow: 0 10px 18px rgba(0,0,0,.25);
 }
 
 .item.fixtureTracked{
@@ -147,8 +166,8 @@ body{
   padding:6px 10px;
   border-radius:999px;
   font-size:12px;
-  border:1px solid var(--border);
-  background: var(--chip);
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
 }
 .badge.good{border-color: rgba(46,204,113,.5)}
 .badge.bad{border-color: rgba(255,77,77,.5)}
@@ -157,15 +176,17 @@ body{
 
 .chips{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
 .chip{
-  border:1px solid var(--border);
-  background: var(--chip);
+  border:1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.03);
   color: var(--text);
   padding:8px 10px;
   border-radius:999px;
   font-weight:800;
   cursor:pointer;
+  transition: all .2s ease;
 }
-.chip.active{border-color: rgba(227,27,35,.55); background: rgba(227,27,35,.12)}
+.chip.active{border-color: rgba(255,49,65,.55); background: rgba(255,49,65,.16)}
+.chip:hover{transform: translateY(-1px)}
 
 .hidden{display:none !important}
 .empty{color:var(--muted); padding:10px 0}
@@ -178,7 +199,7 @@ body{
 
 .breakdownTable{width:100%; border-collapse:separate; border-spacing:0 8px;}
 .breakdownTable th{color:var(--muted); font-size:12px; text-align:left; font-weight:800; padding:0 8px 6px;}
-.breakdownTable td{background:#0f0f0f; border:1px solid var(--border); padding:10px 8px;}
+.breakdownTable td{background:rgba(12,14,20,.7); border:1px solid rgba(255,255,255,.06); padding:10px 8px;}
 .breakdownTable td:first-child{border-top-left-radius:12px; border-bottom-left-radius:12px;}
 .breakdownTable td:last-child{border-top-right-radius:12px; border-bottom-right-radius:12px; text-align:right; font-weight:900;}
 .breakdownPill{display:inline-block; padding:4px 8px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-size:12px; font-weight:800;}
@@ -208,7 +229,13 @@ body{
 
 .modal.hidden{display:none !important}
 
-.brandLogo{width:34px;height:34px;border-radius:10px;display:block}
+.brandLogo{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  display:block;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
 
 
 
