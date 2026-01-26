@@ -15,25 +15,26 @@
   <link rel="stylesheet" href="styles.css" />
 <style>
 :root{
-  --bg:#0b0c0f;
-  --card:#151821;
-  --card-strong:#1a1f2b;
-  --muted:#98a2b3;
-  --text:#f5f7fb;
-  --border:#242a36;
-  --accent:#ff3141;
+  --bg:#0a0a0b;
+  --card:#111218;
+  --card-strong:#161821;
+  --muted:#a1a8b5;
+  --text:#f5f5f7;
+  --border:#21242e;
+  --accent:#e31b23;
+  --accent-soft: rgba(227,27,35,.18);
   --good:#2ecc71;
   --bad:#ff4d4d;
-  --chip:#1d2230;
-  --shadow: 0 18px 40px rgba(0,0,0,.35);
-  --glow: 0 0 0 1px rgba(255,255,255,.04), 0 10px 30px rgba(0,0,0,.35);
+  --chip:#181a22;
+  --shadow: 0 18px 40px rgba(0,0,0,.45);
+  --glow: 0 0 0 1px rgba(255,255,255,.035), 0 12px 34px rgba(0,0,0,.45);
 }
 
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg);
+  background: radial-gradient(circle at top, rgba(227,27,35,.08), transparent 45%), var(--bg);
   color:var(--text);
   letter-spacing: 0.1px;
 }
@@ -43,8 +44,8 @@ body{
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 14px;
   border-bottom:1px solid var(--border);
-  background:rgba(11,12,16,.78);
-  backdrop-filter: blur(10px);
+  background:rgba(8,8,10,.85);
+  backdrop-filter: blur(12px);
   z-index:10;
 }
 
@@ -56,8 +57,8 @@ body{
 .container{max-width:980px; margin:0 auto; padding:14px}
 
 .card{
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)) , var(--card);
-  border:1px solid rgba(255,255,255,.06);
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)) , var(--card);
+  border:1px solid rgba(255,255,255,.07);
   border-radius:18px;
   padding:14px;
   margin-bottom:12px;
@@ -93,7 +94,7 @@ body{
   font-weight:700;
   transition: all .2s ease;
 }
-.tab.active{border-color:rgba(255,49,65,.6); background:rgba(255,49,65,.14); box-shadow: 0 10px 18px rgba(255,49,65,.12)}
+.tab.active{border-color:rgba(227,27,35,.6); background:var(--accent-soft); box-shadow: 0 10px 18px rgba(227,27,35,.18)}
 .tab:hover{transform: translateY(-1px)}
 
 .grid3{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px}
@@ -118,8 +119,8 @@ body{
 }
 .input:focus,.select:focus,.textarea:focus{
   outline:none;
-  border-color: rgba(255,49,65,.55);
-  box-shadow: 0 0 0 3px rgba(255,49,65,.15);
+  border-color: rgba(227,27,35,.6);
+  box-shadow: 0 0 0 3px rgba(227,27,35,.18);
 }
 
 .textarea{resize:vertical}
@@ -137,8 +138,8 @@ body{
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 .btn.primary{
-  border-color: rgba(46,204,113,.45);
-  background: linear-gradient(180deg, rgba(46,204,113,.18), rgba(46,204,113,.08));
+  border-color: rgba(227,27,35,.55);
+  background: linear-gradient(180deg, rgba(227,27,35,.35), rgba(227,27,35,.12));
 }
 .btn.danger{
   border-color: rgba(255,77,77,.45);
@@ -188,7 +189,7 @@ body{
   cursor:pointer;
   transition: all .2s ease;
 }
-.chip.active{border-color: rgba(255,49,65,.55); background: rgba(255,49,65,.16)}
+.chip.active{border-color: rgba(227,27,35,.6); background: rgba(227,27,35,.2)}
 .chip:hover{transform: translateY(-1px)}
 
 .hidden{display:none !important}
