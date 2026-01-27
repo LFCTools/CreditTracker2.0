@@ -41,20 +41,45 @@ body{
 
 .topbar{
   position:sticky; top:0;
-  display:flex; align-items:center; justify-content:space-between;
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
   padding:12px 14px;
   border-bottom:1px solid var(--border);
   background:rgba(8,8,10,.85);
   backdrop-filter: blur(12px);
   z-index:10;
+  transition: transform .25s ease, opacity .25s ease;
+}
+.topbar.is-hidden{
+  transform: translateY(-100%);
+  opacity:0;
+  pointer-events:none;
 }
 
-.brand{display:flex; gap:10px; align-items:center}
+.topbarLeft{display:flex; align-items:center; gap:10px}
+.topbarTitle{font-weight:800; letter-spacing:.2px; text-align:center}
+.headerActions{ display:flex; gap:8px; align-items:center; justify-content:flex-end; }
+.iconBtn{
+  border:0;
+  background:transparent;
+  color:var(--text);
+  font-size:20px;
+  padding:6px;
+  border-radius:12px;
+  cursor:pointer;
+}
+.iconBtn:hover{ background: rgba(255,255,255,.06); }
+
 .logo{font-size:22px}
 .title{font-weight:800; letter-spacing:.2px}
 .subtitle{color:var(--muted); font-size:12px; margin-top:2px}
 
-.container{max-width:980px; margin:0 auto; padding:14px}
+.container{
+  max-width:980px;
+  margin:0 auto;
+  padding:14px 14px calc(96px + env(safe-area-inset-bottom, 0px));
+}
 
 .card{
   background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)) , var(--card);
@@ -74,28 +99,57 @@ body{
 .label{font-weight:700; margin-bottom:6px}
 .hint{color:var(--muted); font-size:12px; line-height:1.35}
 
-.tabs{
-  display:flex; gap:8px;
-  margin:10px 0 14px;
-  position: sticky;
-  top: 64px;
-  z-index: 9;
-  background: rgba(12,12,12,.92);
-  padding: 8px 0;
-  backdrop-filter: blur(10px);
+.bottomNav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  gap:8px;
+  justify-content:space-around;
+  border-top:1px solid var(--border);
+  background:rgba(8,8,10,.92);
+  padding:8px 12px calc(env(safe-area-inset-bottom, 0px) + 10px);
+  z-index:11;
+  backdrop-filter: blur(12px);
 }
 .tab{
   flex:1;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.02);
-  color:var(--text);
-  padding:10px 10px;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  padding:8px 0;
   font-weight:700;
-  transition: all .2s ease;
+  font-size:22px;
+  transition: color .2s ease, transform .2s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
 }
-.tab.active{border-color:rgba(227,27,35,.6); background:var(--accent-soft); box-shadow: 0 10px 18px rgba(227,27,35,.18)}
+.tab.active{color:var(--text)}
+.tab.active::after{
+  content:"";
+  position:absolute;
+  bottom:4px;
+  width:6px;
+  height:6px;
+  border-radius:999px;
+  background:var(--text);
+}
 .tab:hover{transform: translateY(-1px)}
+
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  border:0;
+}
 
 .grid3{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px}
 .grid2{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px}
@@ -322,8 +376,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   text-align:center;
 }
 
-.headerActions{ display:flex; gap:10px; align-items:center; }
-
 .modalHeader{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; }
 .modalTitle{ font-weight:800; font-size:18px; }
 .hr{ height:1px; background: rgba(255,255,255,.08); margin:12px 0; border-radius:999px; }
@@ -505,28 +557,18 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
+    <div class="topbarLeft">
       <img class="brandLogo" src="icon.svg" alt="TicketHelpLFC" />
-      <div>
-        <div class="title">LFC Tools</div>
-        <div class="subtitle">Credit Tracker</div>
-      </div>
     </div>
+    <div class="topbarTitle">Credit Tracker</div>
     <div class="headerActions">
-      <button id="btnInfo" class="btn ghost">ℹ️ Info</button>
-      <button id="btnSupport" class="btn ghost">💬 Support</button>
-      <button id="btnInstall" class="btn ghost" hidden>⬇️ Install</button>
+      <button id="btnInfo" class="iconBtn" aria-label="Info" title="Info">ℹ️</button>
+      <button id="btnSupport" class="iconBtn" aria-label="Support" title="Support">❤️</button>
+      <button id="btnInstall" class="iconBtn" hidden>⬇️</button>
     </div>
   </header>
 
   <main class="container">
-    <nav class="tabs">
-      <button class="tab active" data-view="dash">🏠 Dashboard</button>
-      <button class="tab" data-view="matches">📋 Matches</button>
-      <button class="tab" data-view="fixtures">📅 Fixtures</button>
-      <button class="tab" data-view="add">➕ Add</button>
-    </nav>
-
     <!-- Season bar -->
     <section class="card acctBar">
       <div class="acctBarFields">
@@ -928,6 +970,25 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   </div>
 </dialog>
 </main>
+
+  <nav class="bottomNav" aria-label="Primary">
+    <button class="tab active" data-view="dash" aria-label="Dashboard" title="Dashboard">
+      <span aria-hidden="true">🏠</span>
+      <span class="sr-only">Dashboard</span>
+    </button>
+    <button class="tab" data-view="matches" aria-label="Matches" title="Matches">
+      <span aria-hidden="true">📋</span>
+      <span class="sr-only">Matches</span>
+    </button>
+    <button class="tab" data-view="fixtures" aria-label="Fixtures" title="Fixtures">
+      <span aria-hidden="true">📅</span>
+      <span class="sr-only">Fixtures</span>
+    </button>
+    <button class="tab" data-view="add" aria-label="Add" title="Add">
+      <span aria-hidden="true">➕</span>
+      <span class="sr-only">Add</span>
+    </button>
+  </nav>
 
   <div class="hint" style="text-align:center;margin:20px 0;">Powered by LFC Tools</div>
 
@@ -1862,12 +1923,45 @@ onEl("btnBmac","click", ()=> window.open("https://buymeacoffee.com/lfctools", "_
 onEl("btnInfo","click", () => setView("info"));
 }
 
+function bindTopbarAutoHide() {
+  const topbar = document.querySelector(".topbar");
+  if (!topbar) return;
+  let lastY = window.scrollY || 0;
+  let ticking = false;
+  const downThreshold = 10;
+  const upThreshold = 6;
+
+  const update = () => {
+    const currentY = window.scrollY || 0;
+    const delta = currentY - lastY;
+
+    if (currentY <= 0) {
+      topbar.classList.remove("is-hidden");
+    } else if (delta > downThreshold) {
+      topbar.classList.add("is-hidden");
+    } else if (delta < -upThreshold) {
+      topbar.classList.remove("is-hidden");
+    }
+
+    lastY = currentY;
+    ticking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
 function init() {
   if (window.__THLFC_INITED) return;
   window.__THLFC_INITED = true;
   load();
   setupPWA();
   bindEvents();
+  bindTopbarAutoHide();
   try { bindFixturesControls(); } catch(e) {}
   clearForm();
   renderAll();
