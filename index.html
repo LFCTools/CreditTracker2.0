@@ -25,6 +25,7 @@
   --accent-soft: rgba(227,27,35,.18);
   --good:#2ecc71;
   --bad:#ff4d4d;
+  --info:#3b82f6;
   --chip:#1b1b1b;
   --shadow: 0 18px 40px rgba(0,0,0,.45);
   --glow: 0 0 0 1px rgba(255,255,255,.035), 0 12px 34px rgba(0,0,0,.45);
@@ -233,6 +234,10 @@ body{
   border-color: rgba(227,27,35,.55);
   background: linear-gradient(180deg, rgba(227,27,35,.35), rgba(227,27,35,.12));
 }
+.btn.success{
+  border-color: rgba(46,204,113,.6);
+  background: linear-gradient(180deg, rgba(46,204,113,.32), rgba(46,204,113,.12));
+}
 .btn.danger{
   border-color: rgba(255,77,77,.45);
   background: linear-gradient(180deg, rgba(255,77,77,.18), rgba(255,77,77,.08));
@@ -269,6 +274,11 @@ body{
 .badge.bad{border-color: rgba(255,77,77,.5)}
 .badge.neutral{border-color: rgba(154,160,166,.45)}
 .badge.red{border-color: rgba(227,27,35,.55)}
+.badge.comp-pl{border-color: rgba(155,89,182,.7); color: #d9c3f4;}
+.badge.comp-ucl{border-color: rgba(52,152,219,.7); color: #b9dcf6;}
+.badge.comp-lc{border-color: rgba(46,204,113,.7); color: #c9f2de;}
+.badge.comp-fac{border-color: rgba(227,27,35,.7); color: #ffc2c5;}
+.badge.comp-other{border-color: rgba(154,160,166,.45); color: var(--text);}
 
 .chips{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
 .chip{
@@ -281,7 +291,10 @@ body{
   cursor:pointer;
   transition: all .2s ease;
 }
-.chip.active{border-color: rgba(227,27,35,.6); background: rgba(227,27,35,.2)}
+.chip.active{border-color: rgba(255,255,255,.2)}
+.chip.active[data-credit="yes"]{border-color: rgba(46,204,113,.6); background: rgba(46,204,113,.2)}
+.chip.active[data-credit="no"]{border-color: rgba(255,77,77,.6); background: rgba(255,77,77,.2)}
+.chip.active[data-credit="unsure"]{border-color: rgba(59,130,246,.6); background: rgba(59,130,246,.2)}
 .chip:hover{transform: translateY(-1px)}
 
 .hidden{display:none !important}
@@ -637,7 +650,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
       <div id="acctActions" class="acctBarActions">
         <button id="btnAddAccount" class="btn sm">
-          <span class="btnIcon"><img src="icons/assets/add.svg" alt="" aria-hidden="true" /></span>
           Add Account
         </button>
         <button type="button" id="btnEditAccount" class="btn sm">Edit</button>
@@ -840,7 +852,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
           </div>
 
           <div class="row space-between">
-            <button type="submit" class="btn primary">Save match</button>
+            <button type="submit" class="btn success">Save match</button>
             <button type="button" id="btnDelete" class="btn danger" hidden>Delete</button>
           </div>
 
@@ -1345,9 +1357,18 @@ function formatMatchTitle(m) {
   return `Liverpool vs ${m.opponent} (${m.venue})`;
 }
 
-function formatMeta(m) {
+function competitionLabel(comp) {
   const compMap = { PL: "PL", UCL: "UCL", FAC: "FA Cup", LC: "League Cup", OTHER: "Other" };
-  const comp = compMap[m.competition] || m.competition;
+  return compMap[comp] || comp || "Other";
+}
+
+function competitionBadgeClass(comp) {
+  const map = { PL: "comp-pl", UCL: "comp-ucl", LC: "comp-lc", FAC: "comp-fac", OTHER: "comp-other" };
+  return map[comp] || "comp-other";
+}
+
+function formatMeta(m) {
+  const comp = competitionLabel(m.competition);
   const date = m.matchDate || "—";
   return `${date} • ${comp}`;
 }
@@ -1542,12 +1563,18 @@ function matchCard(m) {
   left.appendChild(title);
   left.appendChild(meta);
 
+  const ha = (m.venue === "A") ? "A" : "H";
+  const haPill = document.createElement("div");
+  haPill.className = `pill ${ha === "H" ? "ha-home" : "ha-away"}`;
+  haPill.textContent = ha;
+
   const credit = badgeForCredit(m);
   const creditBadge = document.createElement("div");
   creditBadge.className = `badge ${credit.cls}`;
   creditBadge.textContent = credit.text;
 
   top.appendChild(left);
+  top.appendChild(haPill);
 
   const badges = document.createElement("div");
   badges.className = "itemBadges";
@@ -1559,8 +1586,8 @@ function matchCard(m) {
     badges.appendChild(cost);
   }
   const comp = document.createElement("div");
-  comp.className = "badge red";
-  comp.textContent = `Competition: ${m.competition}`;
+  comp.className = `badge ${competitionBadgeClass(m.competition)}`;
+  comp.textContent = competitionLabel(m.competition);
 
   badges.appendChild(creditBadge);
   badges.appendChild(comp);
