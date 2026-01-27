@@ -783,7 +783,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
         <div class="row space-between">
           <div>
             <div class="label">Credits by Competition</div>
-            <div class="hint">Home (H) + Away (A) tracked separately. Cup comps show “AutoCup” if enabled for this account.</div>
+            <div class="hint">Home (H) & Away (A) tracked separately</div>
           </div>
         </div>
         <div id="compBreakdown" class="breakdown"></div>
@@ -803,6 +803,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       <input id="importFile" type="file" accept="application/json" hidden />
     </label>
   </div>
+   </div>
   <div class="hint">“JSON” is best for restoring exactly. “CSV” is for spreadsheets.</div>
 </section>
 </section>
@@ -3248,8 +3249,5 @@ onEl("btnToggleFeedback","click", ()=>{
   arrow.textContent = open ? "▾" : "▸";
 });
 </script>
-
-
-  <footer class="buildFooter">YNWA</footer>
 </body>
 </html>
