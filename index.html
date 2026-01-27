@@ -334,6 +334,11 @@ body{
 .breakdownPill{display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:var(--chip); font-weight:800; font-size:12px}
 .breakdownPill.good{border-color: rgba(46,204,113,.5); background: rgba(46,204,113,.12)}
 .breakdownPill.neutral{border-color: rgba(154,160,166,.45); background: rgba(154,160,166,.10)}
+.breakdownPill.comp-pl{border-color: rgba(155,89,182,.7); color: #d9c3f4; background: rgba(155,89,182,.12)}
+.breakdownPill.comp-ucl{border-color: rgba(52,152,219,.7); color: #b9dcf6; background: rgba(52,152,219,.12)}
+.breakdownPill.comp-lc{border-color: rgba(46,204,113,.7); color: #c9f2de; background: rgba(46,204,113,.12)}
+.breakdownPill.comp-fac{border-color: rgba(227,27,35,.7); color: #ffc2c5; background: rgba(227,27,35,.12)}
+.breakdownPill.comp-other{border-color: rgba(154,160,166,.45); color: var(--text); background: rgba(154,160,166,.10)}
 
 
 .modal.hidden{display:none !important}
@@ -520,14 +525,14 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
 /* Only colour the H/A pill */
 .pill.ha-home{
-  background: rgba(227,27,35,.90);
-  color:#fff;
+  background: rgba(227,27,35,.18);
+  color:#ffb3b8;
   border-color: rgba(227,27,35,.55);
 }
 
 .pill.ha-away{
-  background: rgba(20,184,166,.90);
-  color:#042f2e;
+  background: rgba(20,184,166,.16);
+  color:#87f1e5;
   border-color: rgba(20,184,166,.55);
 }
 
@@ -546,9 +551,9 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   font-size:11px;
 }
 .backupCard .btn{
-  padding:8px 10px;
-  font-size:13px;
-  border-radius:12px;
+  padding:6px 8px;
+  font-size:12px;
+  border-radius:10px;
   white-space:nowrap;
 
 }
@@ -1486,6 +1491,7 @@ function renderDashboard() {
   const autoCup = getAutoCupForSeason(acc, activeSeasonId());
   const breakdown = computeBreakdownByCompetition(activeSeasonId());
   const labels = { PL: "Premier League", UCL: "UCL", FAC: "FA Cup", LC: "League Cup", OTHER: "Other" };
+  const compClasses = { PL: "comp-pl", UCL: "comp-ucl", LC: "comp-lc", FAC: "comp-fac", OTHER: "comp-other" };
   const table = document.createElement("table");
   table.className = "breakdownTable";
   table.innerHTML = `
@@ -1501,15 +1507,16 @@ function renderDashboard() {
     const row = document.createElement("tr");
     const comp = document.createElement("td");
     comp.textContent = labels[key] || key;
+    const compClass = compClasses[key] || "comp-other";
     const h = document.createElement("td");
     const homeAuto = (key === "LC" && autoCup.LC) || (key === "FAC" && autoCup.FAC) || (key === "UCL" && autoCup.UCL);
     if (homeAuto) {
       h.innerHTML = `<span class="breakdownPill neutral">AutoCup</span>`;
     } else {
-      h.innerHTML = `<span class="breakdownPill good">H: ${breakdown[key].H}</span>`;
+      h.innerHTML = `<span class="breakdownPill ${compClass}">H: ${breakdown[key].H}</span>`;
     }
     const a = document.createElement("td");
-    a.innerHTML = `<span class="breakdownPill good">A: ${breakdown[key].A}</span>`;
+    a.innerHTML = `<span class="breakdownPill ${compClass}">A: ${breakdown[key].A}</span>`;
     row.appendChild(comp);
     row.appendChild(h);
     row.appendChild(a);
