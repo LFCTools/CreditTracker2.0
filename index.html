@@ -1149,6 +1149,23 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
     </div>
   </div>
 </dialog>
+
+<dialog id="deleteAccountModal" class="modal hidden">
+  <div class="modalInner">
+    <div class="modalHeader">
+      <div class="modalTitle">Delete options</div>
+      <button type="button" class="btn ghost sm" id="btnCloseDeleteAccount" aria-label="Close">Close</button>
+    </div>
+    <div class="hr"></div>
+    <div class="label" id="deleteAccountQuestion">Delete account or season?</div>
+    <div class="hint" id="deleteAccountSeason">Season</div>
+    <div class="row gap wrap" style="margin-top:14px;">
+      <button type="button" class="btn danger" id="btnDeleteAccountConfirm">Account</button>
+      <button type="button" class="btn" id="btnDeleteSeasonConfirm">Season</button>
+      <button type="button" class="btn ghost" id="btnDeleteAccountCancel">Cancel</button>
+    </div>
+  </div>
+</dialog>
 </main>
 
   <nav class="bottomNav" aria-label="Primary">
@@ -1250,12 +1267,15 @@ function seasonLabelFromId(id) {
   return `${a}/${b}`;
 }
 
-function getUsedSeasonIds() {
+function getUsedSeasonIds(accountId) {
   const used = new Set();
+  const accId = accountId || null;
   for (const m of (state.data.matches || [])) {
-    if (m && m.seasonId) used.add(m.seasonId);
+    if (!m || !m.seasonId) continue;
+    if (!accId || m.accountId === accId) used.add(m.seasonId);
   }
   for (const acc of (state.data.accounts || [])) {
+    if (accId && acc && acc.id !== accId) continue;
     const map = acc && acc.autoCupBySeason;
     if (map) {
       Object.keys(map).forEach(id => {
@@ -1266,13 +1286,14 @@ function getUsedSeasonIds() {
   return used;
 }
 
-function getAccountSeasonOptions() {
+function getAccountSeasonOptions(accountId) {
+  if (!accountId) return [];
   const seasons = Array.isArray(state.data.seasons) ? state.data.seasons : [];
-  const used = getUsedSeasonIds();
+  const used = getUsedSeasonIds(accountId);
   const out = [];
   const seen = new Set();
   for (const s of seasons) {
-    if (s && (s.userCreated || used.has(s.id))) {
+    if (s && used.has(s.id)) {
       out.push(s);
       seen.add(s.id);
     }
@@ -1573,7 +1594,7 @@ function setView(viewName) {
 function renderSeasonSelect() {
   const sel = $("seasonSelect");
   sel.innerHTML = "";
-  const seasons = getAccountSeasonOptions();
+  const seasons = getAccountSeasonOptions(activeAccountId());
   if (seasons.length === 0) {
     const opt = document.createElement("option");
     opt.value = "";
@@ -1582,13 +1603,19 @@ function renderSeasonSelect() {
     sel.value = "";
     sel.disabled = true;
   } else {
+    const desired = activeSeasonId();
+    const hasDesired = seasons.some(s => s.id === desired);
+    if (desired && !hasDesired) {
+      setActiveSeason(seasons[0].id);
+      return;
+    }
     for (const s of seasons) {
       const opt = document.createElement("option");
       opt.value = s.id;
       opt.textContent = s.label;
       sel.appendChild(opt);
     }
-    sel.value = activeSeasonId() || seasons[0].id;
+    sel.value = desired || seasons[0].id;
     sel.disabled = false;
   }
 
@@ -3014,6 +3041,51 @@ function openAccountSettingsModal(acc){
   });
 }
 
+function openDeleteAccountModal({ accountName, seasonTxt }) {
+  return new Promise(resolve => {
+    const dlg = $("deleteAccountModal");
+    const question = $("deleteAccountQuestion");
+    const seasonLabel = $("deleteAccountSeason");
+    const accountBtn = $("btnDeleteAccountConfirm");
+    const seasonBtn = $("btnDeleteSeasonConfirm");
+    const cancelBtn = $("btnDeleteAccountCancel");
+    const closeBtn = $("btnCloseDeleteAccount");
+    if (!dlg || !question || !seasonLabel || !accountBtn || !seasonBtn || !cancelBtn || !closeBtn) {
+      resolve("cancel");
+      return;
+    }
+
+    question.textContent = `Delete "${accountName}" or just this season?`;
+    seasonLabel.textContent = `Season ${seasonTxt}`;
+
+    const cleanup = (result) => {
+      accountBtn.removeEventListener("click", onAccount);
+      seasonBtn.removeEventListener("click", onSeason);
+      cancelBtn.removeEventListener("click", onCancel);
+      closeBtn.removeEventListener("click", onCancel);
+      dlg.removeEventListener("cancel", onCancel);
+      try { dlg.close(); } catch(e) {}
+      dlg.classList.add("hidden");
+      resolve(result);
+    };
+
+    const onAccount = () => cleanup("account");
+    const onSeason = () => cleanup("season");
+    const onCancel = () => cleanup("cancel");
+
+    accountBtn.addEventListener("click", onAccount);
+    seasonBtn.addEventListener("click", onSeason);
+    cancelBtn.addEventListener("click", onCancel);
+    closeBtn.addEventListener("click", onCancel);
+    dlg.addEventListener("cancel", onCancel);
+
+    dlg.classList.remove("hidden");
+    if (dlg.showModal) dlg.showModal();
+    else dlg.setAttribute("open","");
+    setTimeout(() => seasonBtn.focus(), 0);
+  });
+}
+
 function openAutoCupPrompt(opts){
   const { seasonTxt, competitionLabel } = opts || {};
   return new Promise(resolve => {
@@ -3100,19 +3172,14 @@ async function editActiveAccount(){
   showToast("Account updated");
 }
 
-function deleteActiveAccount(){
+async function deleteActiveAccount(){
   const accId = activeAccountId();
   const acc = state.data.accounts.find(a=>a.id===accId);
   if(!acc){ alert("No account selected"); return; }
   const seasonId = activeSeasonId();
   const seasonTxt = seasonLabelFromId(seasonId);
-  const choice = prompt(
-    `Type "season" to delete season ${seasonTxt} only, or "account" to delete account "${acc.name}".`
-  );
-  if(!choice) return;
-  const normalized = choice.trim().toLowerCase();
-
-  if (normalized === "season") {
+  const choice = await openDeleteAccountModal({ accountName: acc.name, seasonTxt });
+  if(choice === "season") {
     const ok = confirm(`Delete season ${seasonTxt} for "${acc.name}"?\nThis will remove tracked matches for this season only.`);
     if(!ok) return;
     state.data.matches = state.data.matches.filter(m => !(m.accountId === accId && m.seasonId === seasonId));
@@ -3120,7 +3187,7 @@ function deleteActiveAccount(){
       delete acc.autoCupBySeason[seasonId];
     }
     acc.autoCup = { LC:false, FAC:false, UCL:false };
-    const options = getAccountSeasonOptions();
+    const options = getAccountSeasonOptions(accId);
     if (state.data.activeSeasonId === seasonId) {
       state.data.activeSeasonId = options.find(s => s.id !== seasonId)?.id || options[0]?.id || "";
     }
@@ -3130,10 +3197,7 @@ function deleteActiveAccount(){
     return;
   }
 
-  if (normalized !== "account") {
-    alert('Please type "season" or "account".');
-    return;
-  }
+  if (choice !== "account") return;
 
   if(state.data.accounts.length <= 1){
     alert("You must have at least 1 account.");
