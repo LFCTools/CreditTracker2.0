@@ -84,7 +84,7 @@ body{
 .container{
   max-width:980px;
   margin:0 auto;
-  padding:14px 14px calc(96px + env(safe-area-inset-bottom, 0px));
+  padding:14px 14px calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
 .card{
@@ -566,6 +566,7 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 }
 .backupCard .hint{
   font-size:11px;
+  margin-top:10px;
 }
 .backupCard .btn{
   padding:5px 6px;
@@ -803,7 +804,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
       <input id="importFile" type="file" accept="application/json" hidden />
     </label>
   </div>
-   </div>
   <div class="hint">“JSON” is best for restoring exactly. “CSV” is for spreadsheets.</div>
 </section>
 </section>
