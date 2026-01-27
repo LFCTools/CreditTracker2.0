@@ -522,6 +522,17 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   justify-content:center;
   min-width:34px;
 }
+.fixtureLabels{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.pill.comp-pill{
+  font-weight:700;
+  font-size:11px;
+  padding:5px 8px;
+  min-width:auto;
+}
 
 /* Only colour the H/A pill */
 .pill.ha-home{
@@ -551,22 +562,22 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   font-size:11px;
 }
 .backupCard .btn{
-  padding:6px 8px;
-  font-size:12px;
+  padding:5px 6px;
+  font-size:11px;
   border-radius:10px;
   white-space:nowrap;
 
 }
 .backupCard .icon{
-  width:16px;
-  height:16px;
+  width:14px;
+  height:14px;
   display:inline-flex;
   align-items:center;
   justify-content:center;
 }
 .backupCard .icon img{
-  width:16px;
-  height:16px;
+  width:14px;
+  height:14px;
   display:block;
 }
 
@@ -576,14 +587,15 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   gap:8px;
 }
 .backupActions{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
-  gap:8px;
+  display:flex;
+  flex-wrap:nowrap;
+  gap:6px;
 }
 .backupActions .btn,
 .backupActions .fileBtn{
   width:100%;
   justify-content:center;
+  min-width:0;
 }
 .backupActions .btn{
   display:flex;
@@ -1400,6 +1412,12 @@ function formatMatchTitle(m) {
   return `Liverpool vs ${m.opponent} (${m.venue})`;
 }
 
+function formatDisplayDate(ymd) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd || "");
+  if (!match) return ymd || "—";
+  return `${match[3]}-${match[2]}-${match[1]}`;
+}
+
 function competitionLabel(comp) {
   const compMap = { PL: "PL", UCL: "UCL", FAC: "FA Cup", LC: "League Cup", OTHER: "Other" };
   return compMap[comp] || comp || "Other";
@@ -1412,7 +1430,7 @@ function competitionBadgeClass(comp) {
 
 function formatMeta(m) {
   const comp = competitionLabel(m.competition);
-  const date = m.matchDate || "—";
+  const date = formatDisplayDate(m.matchDate || "");
   return `${date} • ${comp}`;
 }
 
@@ -2435,7 +2453,8 @@ async function loadFixturesData() {
 
 function formatFixtureDate(f) {
   // Use date only (app stores matchDate only). Time may be 00:00 in feed.
-  return f.date || (f.datetime_utc ? (f.datetime_utc.slice(0,10)) : "");
+  const raw = f.date || (f.datetime_utc ? (f.datetime_utc.slice(0,10)) : "");
+  return formatDisplayDate(raw);
 }
 
 function fixtureRow(f) {
@@ -2450,9 +2469,12 @@ function fixtureRow(f) {
     <div class="row space-between">
       <div>
         <div class="itemTitle">${opp}</div>
-        <div class="hint">${when}${time} • ${comp} • ${ha}</div>
+        <div class="hint">${when}${time}</div>
       </div>
-     <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
+     <div class="fixtureLabels">
+        <div class="pill comp-pill">${comp}</div>
+        <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
+      </div>
     </div>
   `;
   el.addEventListener("click", () => prefillFromFixture(f));
@@ -2517,6 +2539,7 @@ const _trackedKeys = new Set(_matches.map(m => `${(m.matchDate||"")}|${(m.compet
 
     listEl.innerHTML = filtered.map(f => {
       const when = (f.date || (f.datetime_utc||"").slice(0,10));
+      const whenDisplay = formatDisplayDate(when);
       const ha = (f.venue === "A") ? "A" : "H";
       const comp = f.competition || "OTHER";
       const opp = f.opponent || "—";
@@ -2529,9 +2552,12 @@ const _trackedKeys = new Set(_matches.map(m => `${(m.matchDate||"")}|${(m.compet
           <div class="row space-between">
             <div>
               <div class="itemTitle">${opp}</div>
-              <div class="hint">${when}${time} • ${comp} • ${ha}</div>
+              <div class="hint">${whenDisplay}${time}</div>
             </div>
-           <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
+           <div class="fixtureLabels">
+              <div class="pill comp-pill">${comp}</div>
+              <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
+            </div>
           </div>
         </div>
       `;
