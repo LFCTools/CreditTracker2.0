@@ -69,6 +69,11 @@ body{
   border-radius:12px;
   cursor:pointer;
 }
+.iconImg{
+  width:20px;
+  height:20px;
+  display:block;
+}
 .iconBtn:hover{ background: rgba(255,255,255,.06); }
 
 .logo{font-size:22px}
@@ -127,6 +132,11 @@ body{
   align-items:center;
   justify-content:center;
   position:relative;
+}
+.tabIcon{
+  width:22px;
+  height:22px;
+  display:block;
 }
 .tab.active{color:var(--text)}
 .tab.active::after{
@@ -562,8 +572,12 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
     </div>
     <div class="topbarTitle">Credit Tracker</div>
     <div class="headerActions">
-      <button id="btnInfo" class="iconBtn" aria-label="Info" title="Info">ℹ️</button>
-      <button id="btnSupport" class="iconBtn" aria-label="Support" title="Support">❤️</button>
+      <button id="btnInfo" class="iconBtn" aria-label="Info" title="Info">
+        <img class="iconImg" src="icons/assets/info.svg" alt="" aria-hidden="true" />
+      </button>
+      <button id="btnSupport" class="iconBtn" aria-label="Support" title="Support">
+        <img class="iconImg" src="icons/assets/support.svg" alt="" aria-hidden="true" />
+      </button>
       <button id="btnInstall" class="iconBtn" hidden>⬇️</button>
     </div>
   </header>
@@ -973,19 +987,19 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
   <nav class="bottomNav" aria-label="Primary">
     <button class="tab active" data-view="dash" aria-label="Dashboard" title="Dashboard">
-      <span aria-hidden="true">🏠</span>
+      <img class="tabIcon" src="icons/assets/dashboard.svg" alt="" aria-hidden="true" />
       <span class="sr-only">Dashboard</span>
     </button>
     <button class="tab" data-view="matches" aria-label="Matches" title="Matches">
-      <span aria-hidden="true">📋</span>
+      <img class="tabIcon" src="icons/assets/matches.svg" alt="" aria-hidden="true" />
       <span class="sr-only">Matches</span>
     </button>
     <button class="tab" data-view="fixtures" aria-label="Fixtures" title="Fixtures">
-      <span aria-hidden="true">📅</span>
+      <img class="tabIcon" src="icons/assets/fixtures.svg" alt="" aria-hidden="true" />
       <span class="sr-only">Fixtures</span>
     </button>
     <button class="tab" data-view="add" aria-label="Add" title="Add">
-      <span aria-hidden="true">➕</span>
+      <img class="tabIcon" src="icons/assets/add.svg" alt="" aria-hidden="true" />
       <span class="sr-only">Add</span>
     </button>
   </nav>
