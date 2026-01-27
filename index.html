@@ -734,8 +734,21 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
     <!-- Matches -->
     <section id="viewMatches" class="view hidden">
       <section class="card">
-        <div class="row wrap gap">
+        <div class="row space-between">
+          <div>
+            <div class="label withIcon">
+              <img class="labelIcon" src="icons/assets/matches.svg" alt="" aria-hidden="true" />
+              Matches
+            </div>
+            <div class="hint">Search, sort, and filter all saved matches.</div>
+          </div>
+        </div>
+
+        <div class="row wrap gap" style="margin-top:12px;">
           <input id="searchInput" class="input grow" placeholder="Search opponent / notes…" />
+        </div>
+
+        <div class="grid2" style="margin-top:12px;">
           <select id="matchSort" class="select">
             <option value="matchDate" selected>Sort: Match date</option>
             <option value="dateAdded">Sort: Date added</option>
