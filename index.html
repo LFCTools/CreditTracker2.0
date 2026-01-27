@@ -3104,6 +3104,37 @@ function deleteActiveAccount(){
   const accId = activeAccountId();
   const acc = state.data.accounts.find(a=>a.id===accId);
   if(!acc){ alert("No account selected"); return; }
+  const seasonId = activeSeasonId();
+  const seasonTxt = seasonLabelFromId(seasonId);
+  const choice = prompt(
+    `Type "season" to delete season ${seasonTxt} only, or "account" to delete account "${acc.name}".`
+  );
+  if(!choice) return;
+  const normalized = choice.trim().toLowerCase();
+
+  if (normalized === "season") {
+    const ok = confirm(`Delete season ${seasonTxt} for "${acc.name}"?\nThis will remove tracked matches for this season only.`);
+    if(!ok) return;
+    state.data.matches = state.data.matches.filter(m => !(m.accountId === accId && m.seasonId === seasonId));
+    if (acc.autoCupBySeason && acc.autoCupBySeason[seasonId]) {
+      delete acc.autoCupBySeason[seasonId];
+    }
+    acc.autoCup = { LC:false, FAC:false, UCL:false };
+    const options = getAccountSeasonOptions();
+    if (state.data.activeSeasonId === seasonId) {
+      state.data.activeSeasonId = options.find(s => s.id !== seasonId)?.id || options[0]?.id || "";
+    }
+    save();
+    renderAll();
+    showToast("Season deleted");
+    return;
+  }
+
+  if (normalized !== "account") {
+    alert('Please type "season" or "account".');
+    return;
+  }
+
   if(state.data.accounts.length <= 1){
     alert("You must have at least 1 account.");
     return;
