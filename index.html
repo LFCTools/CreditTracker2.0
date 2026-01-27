@@ -716,8 +716,11 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
         </div>
          <div class="inlineFields">
           <div>
-            <div class="fieldLabel">How many accounts?</div>
-            <input id="setupCount" class="input" type="number" min="1" max="10" value="1" />
+            <div class="fieldLabel">Add mode</div>
+            <select id="setupMode" class="select">
+              <option value="new">New account</option>
+              <option value="existing">Existing account</option>
+            </select>
           </div>
           <div>
             <div class="fieldLabel">Season</div>
@@ -725,9 +728,39 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
           </div>
         </div>
 
-        <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
-<div class="hint" style="margin-top:10px;">Enter names below. AutoCup is saved per account *and per season*.</div>
-        <div id="setupNames" class="list" style="margin-top:10px;"></div>
+        <div id="setupNewAccountFields">
+          <div class="inlineFields" style="margin-top:10px;">
+            <div>
+              <div class="fieldLabel">How many accounts?</div>
+              <input id="setupCount" class="input" type="number" min="1" max="10" value="1" />
+            </div>
+          </div>
+          <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
+          <div class="hint" style="margin-top:10px;">Enter names below. AutoCup is saved per account *and per season*.</div>
+          <div id="setupNames" class="list" style="margin-top:10px;"></div>
+        </div>
+
+        <div id="setupExistingAccountFields" class="hidden" style="margin-top:10px;">
+          <div class="fieldLabel">Choose existing account</div>
+          <select id="setupExistingAccount" class="select"></select>
+
+          <div class="fieldLabel" style="margin-top:10px;">AutoCup (HOME only — Away credits still tracked)</div>
+          <div class="row wrap gap">
+            <label class="toggle">
+              <input type="checkbox" id="setupExistingLC" />
+              <span>League Cup</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setupExistingFAC" />
+              <span>FA Cup</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="setupExistingUCL" />
+              <span>Champions League</span>
+            </label>
+          </div>
+          <div class="hint" style="margin-top:8px;">This adds a new season for the selected account.</div>
+        </div>
 
         <div class="row gap wrap" style="margin-top:14px;">
           <button id="btnSetupCreate" class="btn primary">Save Account</button>
@@ -2144,6 +2177,10 @@ onEl("btnSettings","click", openSettings);
 
   // Setup screen
   onEl("setupCount","input", renderSetupNames);
+  onEl("setupMode","change", () => {
+    updateSetupModeUI();
+    renderSetupNames();
+  });
   onEl("btnSetupCreate","click", () => { try { saveSetup(); } catch(e){ alert("Setup error: " + (e && e.message ? e.message : e)); console.error(e); } });
 
 onEl("btnSupport","click", openSupport);
@@ -2194,11 +2231,13 @@ function init() {
   try { bindFixturesControls(); } catch(e) {}
   clearForm();
   renderAll();
+  updateSetupModeUI();
   setView("dash");
 
   if (!state.data.accounts || state.data.accounts.length === 0) {
     setView("setup");
     renderSetupNames();
+    updateSetupModeUI();
   
 }
 }
@@ -2212,7 +2251,12 @@ function renderSetupNames() {
 
   const count = Math.max(1, Math.min(10, parseInt($("setupCount")?.value || "1", 10)));
 
-    wrap.innerHTML = "";
+  wrap.innerHTML = "";
+  if (getSetupMode() === "existing") {
+    try { populateAllSeasonSelects(); } catch(e) {}
+    return;
+  }
+
   for (let i = 1; i <= count; i++) {
     const row = document.createElement("div");
     row.className = "item";
@@ -2246,17 +2290,52 @@ function renderSetupNames() {
 
 }
 
+function getSetupMode() {
+  return $("setupMode")?.value || "new";
+}
+
+function populateExistingAccountSelect() {
+  const sel = $("setupExistingAccount");
+  if (!sel) return;
+  sel.innerHTML = "";
+  for (const a of (state.data.accounts || [])) {
+    const opt = document.createElement("option");
+    opt.value = a.id;
+    opt.textContent = a.name;
+    sel.appendChild(opt);
+  }
+  sel.value = activeAccountId() || sel.options[0]?.value || "";
+}
+
+function updateSetupModeUI() {
+  const modeSelect = $("setupMode");
+  const newFields = $("setupNewAccountFields");
+  const existingFields = $("setupExistingAccountFields");
+  if (!modeSelect || !newFields || !existingFields) return;
+  const hasAccounts = (state.data.accounts || []).length > 0;
+  const existingOption = modeSelect.querySelector('option[value="existing"]');
+  if (existingOption) existingOption.disabled = !hasAccounts;
+  if (!hasAccounts && modeSelect.value === "existing") modeSelect.value = "new";
+
+  const isExisting = modeSelect.value === "existing";
+  newFields.classList.toggle("hidden", isExisting);
+  existingFields.classList.toggle("hidden", !isExisting);
+  if (isExisting) populateExistingAccountSelect();
+}
+
 
 function openSetupForNewAccount() {
   // Convenience: go to setup screen but keep existing accounts
   state.isAddingSingle = true;
   setView("setup");
   $("setupCount").value = "1";
+  if ($("setupMode")) $("setupMode").value = "new";
 
   // Ensure the setup season dropdown is populated with real season IDs
   try { populateSeasonSelect($("setupSeason")); } catch(e) {}
   if ($("setupSeason")) $("setupSeason").value = activeSeasonId();
 
+  updateSetupModeUI();
   renderSetupNames();
 }
 
@@ -2267,6 +2346,32 @@ function saveSetup() {
   const seasonLabel = setupSeason?.selectedOptions?.[0]?.textContent || seasonLabelFromId(season);
   ensureSeasonExists(season, seasonLabel);
   setActiveSeason(season);
+
+  if (getSetupMode() === "existing") {
+    const accId = $("setupExistingAccount")?.value;
+    const acc = state.data.accounts.find(a => a.id === accId);
+    if (!acc) {
+      alert("Select an existing account to add a season.");
+      return;
+    }
+    const autoCup = {
+      LC: !!$("setupExistingLC")?.checked,
+      FAC: !!$("setupExistingFAC")?.checked,
+      UCL: !!$("setupExistingUCL")?.checked
+    };
+    setAutoCupForSeason(acc, season, autoCup);
+    acc.autoCup = {
+      LC: !!autoCup.LC,
+      FAC: !!autoCup.FAC,
+      UCL: !!autoCup.UCL
+    };
+    setActiveAccount(acc.id);
+    save();
+    renderAll();
+    setView("dash");
+    try { showToast(`Season added to ${acc.name}`); } catch(e) { alert(`Season added to ${acc.name}`); }
+    return;
+  }
 
   const createdIds = [];
 
