@@ -533,6 +533,11 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   padding:5px 8px;
   min-width:auto;
 }
+.pill.comp-pill.comp-pl{border-color: rgba(155,89,182,.7); color: #d9c3f4; background: rgba(155,89,182,.12)}
+.pill.comp-pill.comp-ucl{border-color: rgba(52,152,219,.7); color: #b9dcf6; background: rgba(52,152,219,.12)}
+.pill.comp-pill.comp-lc{border-color: rgba(46,204,113,.7); color: #c9f2de; background: rgba(46,204,113,.12)}
+.pill.comp-pill.comp-fac{border-color: rgba(227,27,35,.7); color: #ffc2c5; background: rgba(227,27,35,.12)}
+.pill.comp-pill.comp-other{border-color: rgba(154,160,166,.45); color: var(--text); background: rgba(154,160,166,.10)}
 
 /* Only colour the H/A pill */
 .pill.ha-home{
@@ -2461,6 +2466,7 @@ function fixtureRow(f) {
   const when = formatFixtureDate(f);
   const ha = (f.venue === "H") ? "H" : "A";
   const comp = f.competition || "OTHER";
+  const compClass = competitionBadgeClass(comp);
   const opp = f.opponent || "—";
   const time = (f.time && f.time !== "00:00") ? ` • ${f.time}` : "";
   const el = document.createElement("div");
@@ -2472,7 +2478,7 @@ function fixtureRow(f) {
         <div class="hint">${when}${time}</div>
       </div>
      <div class="fixtureLabels">
-        <div class="pill comp-pill">${comp}</div>
+        <div class="pill comp-pill ${compClass}">${comp}</div>
         <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
       </div>
     </div>
@@ -2542,6 +2548,7 @@ const _trackedKeys = new Set(_matches.map(m => `${(m.matchDate||"")}|${(m.compet
       const whenDisplay = formatDisplayDate(when);
       const ha = (f.venue === "A") ? "A" : "H";
       const comp = f.competition || "OTHER";
+      const compClass = competitionBadgeClass(comp);
       const opp = f.opponent || "—";
       const time = (f.time && f.time !== "00:00") ? ` • ${f.time}` : "";
       const fid = (f.id || "").replace(/"/g,'');
@@ -2555,7 +2562,7 @@ const _trackedKeys = new Set(_matches.map(m => `${(m.matchDate||"")}|${(m.compet
               <div class="hint">${whenDisplay}${time}</div>
             </div>
            <div class="fixtureLabels">
-              <div class="pill comp-pill">${comp}</div>
+              <div class="pill comp-pill ${compClass}">${comp}</div>
               <div class="pill ${ha === "H" ? "ha-home" : "ha-away"}">${ha}</div>
             </div>
           </div>
