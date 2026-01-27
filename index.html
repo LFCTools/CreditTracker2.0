@@ -1217,6 +1217,59 @@ function seasonLabelFromId(id) {
   return `${a}/${b}`;
 }
 
+function getUsedSeasonIds() {
+  const used = new Set();
+  for (const m of (state.data.matches || [])) {
+    if (m && m.seasonId) used.add(m.seasonId);
+  }
+  for (const acc of (state.data.accounts || [])) {
+    const map = acc && acc.autoCupBySeason;
+    if (map) {
+      Object.keys(map).forEach(id => {
+        if (id) used.add(id);
+      });
+    }
+  }
+  return used;
+}
+
+function getAccountSeasonOptions() {
+  const seasons = Array.isArray(state.data.seasons) ? state.data.seasons : [];
+  const used = getUsedSeasonIds();
+  const out = [];
+  const seen = new Set();
+  for (const s of seasons) {
+    if (s && (s.userCreated || used.has(s.id))) {
+      out.push(s);
+      seen.add(s.id);
+    }
+  }
+  for (const id of used) {
+    if (!seen.has(id)) {
+      out.push({ id, label: seasonLabelFromId(id) });
+      seen.add(id);
+    }
+  }
+  return out;
+}
+
+function ensureSeasonExists(id, label) {
+  if (!id) return;
+  if (!Array.isArray(state.data.seasons)) state.data.seasons = [];
+  const existing = state.data.seasons.find(s => s.id === id);
+  if (existing) {
+    if (!existing.label && label) existing.label = label;
+    if (!("userCreated" in existing)) existing.userCreated = true;
+    return;
+  }
+  state.data.seasons.push({
+    id,
+    label: label || seasonLabelFromId(id),
+    createdAt: new Date().toISOString(),
+    userCreated: true
+  });
+}
+
 function generateSeasons(rangeBack = 3, rangeForward = 6) {
   const cur = currentSeasonIdFromDate(); // e.g. "2025-26"
   const startYear = parseInt(cur.split("-")[0], 10);
@@ -1487,24 +1540,30 @@ function setView(viewName) {
 function renderSeasonSelect() {
   const sel = $("seasonSelect");
   sel.innerHTML = "";
-  for (const s of state.data.seasons) {
+  const seasons = getAccountSeasonOptions();
+  if (seasons.length === 0) {
     const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.label;
+    opt.value = "";
+    opt.textContent = "No seasons yet";
     sel.appendChild(opt);
+    sel.value = "";
+    sel.disabled = true;
+  } else {
+    for (const s of seasons) {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = s.label;
+      sel.appendChild(opt);
+    }
+    sel.value = activeSeasonId() || seasons[0].id;
+    sel.disabled = false;
   }
-  sel.value = activeSeasonId();
 
   // mirror into modals if present
   const onboardSeason = $("onboardSeason");
   if (onboardSeason) {
     onboardSeason.innerHTML = sel.innerHTML;
     onboardSeason.value = sel.value;
-  }
-  const setupSeason = $("setupSeason");
-  if (setupSeason) {
-    setupSeason.innerHTML = sel.innerHTML;
-    setupSeason.value = sel.value;
   }
 }
 
@@ -1934,7 +1993,7 @@ function addSeason() {
     alert("That season already exists.");
     return;
   }
-  state.data.seasons.push({ id, label, createdAt: new Date().toISOString() });
+  ensureSeasonExists(id, label);
   state.data.activeSeasonId = id;
   save();
   renderAll();
@@ -2203,7 +2262,10 @@ function openSetupForNewAccount() {
 
 function saveSetup() {
   const count = Math.max(1, Math.min(10, parseInt($("setupCount")?.value || "1", 10)));
-  const season = $("setupSeason")?.value || activeSeasonId();
+  const setupSeason = $("setupSeason");
+  const season = setupSeason?.value || activeSeasonId();
+  const seasonLabel = setupSeason?.selectedOptions?.[0]?.textContent || seasonLabelFromId(season);
+  ensureSeasonExists(season, seasonLabel);
   setActiveSeason(season);
 
   const createdIds = [];
