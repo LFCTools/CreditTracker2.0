@@ -166,11 +166,12 @@ body{
 .tab.active::after{
   content:"";
   position:absolute;
-  bottom:4px;
-  width:6px;
-  height:6px;
+ top:4px;
+  width:28px;
+  height:3px;
   border-radius:999px;
-  background:var(--text);
+   background:var(--accent);
+  box-shadow: 0 0 8px rgba(227,27,35,.65), 0 0 14px rgba(227,27,35,.4);
 }
 .tab:hover{transform: translateY(-1px)}
 
@@ -214,6 +215,7 @@ body{
 .textarea{resize:vertical}
 
 .fieldLabel{color:var(--muted); font-size:12px; margin:6px 0}
+#viewAdd .fieldLabel{font-weight:700}
 .fieldLabel.withIcon{
   display:flex;
   align-items:center;
@@ -255,6 +257,18 @@ body{
   box-shadow: 0 10px 18px rgba(0,0,0,.25);
 }
 
+.matchItem{
+  position:relative;
+}
+
+.itemCornerTags{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
+
 .item.fixtureTracked{
   border-color: rgba(241,196,15,.45);
   background: rgba(241,196,15,.04);
@@ -275,6 +289,16 @@ body{
 .badge.bad{border-color: rgba(255,77,77,.5)}
 .badge.neutral{border-color: rgba(154,160,166,.45)}
 .badge.red{border-color: rgba(227,27,35,.55)}
+.badge.attended-yes{
+  border-color: rgba(255,255,255,.6);
+  color:#ffffff;
+  background: rgba(255,255,255,.08);
+}
+.badge.attended-no{
+  border-color: rgba(249,115,22,.75);
+  color:#fdba74;
+  background: rgba(249,115,22,.18);
+}
 .badge.comp-pl{border-color: rgba(155,89,182,.7); color: #d9c3f4;}
 .badge.comp-ucl{border-color: rgba(52,152,219,.7); color: #b9dcf6;}
 .badge.comp-lc{border-color: rgba(46,204,113,.7); color: #c9f2de;}
@@ -296,6 +320,37 @@ body{
 .chip.active[data-credit="yes"]{border-color: rgba(46,204,113,.6); background: rgba(46,204,113,.2)}
 .chip.active[data-credit="no"]{border-color: rgba(255,77,77,.6); background: rgba(255,77,77,.2)}
 .chip.active[data-credit="unsure"]{border-color: rgba(59,130,246,.6); background: rgba(59,130,246,.2)}
+.chip.active[data-attended="yes"]{
+  border-color: rgba(255,255,255,.6);
+  background: rgba(255,255,255,.08);
+  color: #ffffff;
+}
+.chip.active[data-attended="no"]{
+  border-color: rgba(249,115,22,.75);
+  background: rgba(249,115,22,.18);
+  color: #fdba74;
+}
+.chip.comp-chip{font-weight:800}
+.chip.comp-chip[data-comp="PL"]{border-color: rgba(155,89,182,.7); color: #d9c3f4}
+.chip.comp-chip[data-comp="UCL"]{border-color: rgba(52,152,219,.7); color: #b9dcf6}
+.chip.comp-chip[data-comp="LC"]{border-color: rgba(46,204,113,.7); color: #c9f2de}
+.chip.comp-chip[data-comp="FAC"]{border-color: rgba(227,27,35,.7); color: #ffc2c5}
+.chip.comp-chip[data-comp="OTHER"]{border-color: rgba(154,160,166,.45); color: var(--text)}
+.chip.comp-chip.active[data-comp="PL"]{background: rgba(155,89,182,.18)}
+.chip.comp-chip.active[data-comp="UCL"]{background: rgba(52,152,219,.18)}
+.chip.comp-chip.active[data-comp="LC"]{background: rgba(46,204,113,.18)}
+.chip.comp-chip.active[data-comp="FAC"]{background: rgba(227,27,35,.18)}
+.chip.comp-chip.active[data-comp="OTHER"]{background: rgba(154,160,166,.12)}
+.chip.ha-chip[data-ha="H"]{border-color: rgba(227,27,35,.55); color:#ffb3b8}
+.chip.ha-chip[data-ha="A"]{border-color: rgba(20,184,166,.55); color:#87f1e5}
+.chip.ha-chip.active[data-ha="H"]{background: rgba(227,27,35,.18)}
+.chip.ha-chip.active[data-ha="A"]{background: rgba(20,184,166,.18)}
+#viewAdd .chip.comp-chip:not(.active),
+#viewAdd .chip.ha-chip:not(.active){
+  border-color: rgba(255,255,255,.12);
+  color: var(--muted);
+  background: rgba(255,255,255,.02);
+}
 .chip:hover{transform: translateY(-1px)}
 
 .hidden{display:none !important}
@@ -612,9 +667,21 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
   margin-bottom:10px;
 }
 .filtersGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
+  display:flex;
+  flex-direction:column;
   gap:10px;
+}
+.filtersRow{
+  display:flex;
+  gap:10px;
+}
+.filtersRow.twoCol > *{
+  flex:1;
+  min-width:0;
+}
+.filtersRow.threeCol > *{
+  flex:1;
+  min-width:0;
 }
 .infoPage{
   font-size:15px;
@@ -826,29 +893,38 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
         </div>
 
         <div class="filtersGrid" style="margin-top:12px;">
-          <select id="matchSort" class="select">
-            <option value="matchDate" selected>Sort: Match date</option>
-            <option value="dateAdded">Sort: Date added</option>
-          </select>
-          <select id="filterVenue" class="select">
-            <option value="">Venue: All</option>
-            <option value="H">Home (H)</option>
-            <option value="A">Away (A)</option>
-          </select>
-          <select id="filterComp" class="select">
-            <option value="">Comp: All</option>
-            <option value="PL">PL</option>
-            <option value="UCL">UCL</option>
-            <option value="FAC">FA Cup</option>
-            <option value="LC">League Cup</option>
-            <option value="OTHER">Other</option>
-          </select>
-          <select id="filterCredit" class="select">
-            <option value="">Credit: All</option>
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-            <option value="unsure">Unsure</option>
-          </select>
+          <div class="filtersRow twoCol">
+            <select id="matchSort" class="select">
+              <option value="matchDate" selected>Sort: Match date</option>
+              <option value="dateAdded">Sort: Date added</option>
+            </select>
+            <select id="filterVenue" class="select">
+              <option value="">Venue: All</option>
+              <option value="H">Home (H)</option>
+              <option value="A">Away (A)</option>
+            </select>
+          </div>
+          <div class="filtersRow threeCol">
+            <select id="filterComp" class="select">
+              <option value="">Comp: All</option>
+              <option value="PL">PL</option>
+              <option value="UCL">UCL</option>
+              <option value="FAC">FA Cup</option>
+              <option value="LC">League Cup</option>
+              <option value="OTHER">Other</option>
+            </select>
+            <select id="filterCredit" class="select">
+              <option value="">Credit: All</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="unsure">Unsure</option>
+            </select>
+            <select id="filterAttended" class="select">
+              <option value="">Attended: All</option>
+              <option value="yes">Attended</option>
+              <option value="no">Not attended</option>
+            </select>
+          </div>
         </div>
       </section>
       <section class="card">
@@ -885,51 +961,45 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
 
             <div>
               <div class="fieldLabel">Home/Away</div>
-              <select id="venue" class="select" required>
-                <option value="H">Home (H)</option>
-                <option value="A">Away (A)</option>
-              </select>
+              <div class="chips" role="group" aria-label="Home or Away">
+                <input type="hidden" id="venue" value="H" />
+                <button type="button" class="chip ha-chip" data-ha="H">Home (H)</button>
+                <button type="button" class="chip ha-chip" data-ha="A">Away (A)</button>
+              </div>
             </div>
 
             <div>
               <div class="fieldLabel">Competition</div>
-              <select id="competition" class="select" required>
-                <option value="PL">PL</option>
-                <option value="UCL">UCL</option>
-                <option value="FAC">FA Cup</option>
-                <option value="LC">League Cup</option>
-                <option value="OTHER">Other</option>
-              </select>
+              <div class="chips" role="group" aria-label="Competition">
+                <input type="hidden" id="competition" value="PL" />
+                <button type="button" class="chip comp-chip comp-pl" data-comp="PL">PL</button>
+                <button type="button" class="chip comp-chip comp-ucl" data-comp="UCL">UCL</button>
+                <button type="button" class="chip comp-chip comp-fac" data-comp="FAC">FA Cup</button>
+                <button type="button" class="chip comp-chip comp-lc" data-comp="LC">League Cup</button>
+                <button type="button" class="chip comp-chip comp-other" data-comp="OTHER">Other</button>
+              </div>
             </div>
           </div>
 
-          <div class="grid2">
-            
-            <div>
-              <div class="fieldLabel">Ticket</div>
-              <select id="ticketAction" class="select">
-                <option value="credit">Credit</option>
-                <option value="season_return">Season Ticket Return</option>
-                <option value="fwd_me_credit">Forwarded to me (with credit)</option>
-                <option value="fwd_me_nocredit">Forwarded to me (no credit)</option>
-                <option value="hosp_credit">Hospitality (credit)</option>
-                <option value="hosp_nocredit">Hospitality (no credit)</option>
-                <option value="scan_nocredit">Scan in (no credit)</option>
-              </select>
-            </div>
-
-          </div>
+          <input type="hidden" id="ticketAction" value="credit" />
 
           <div>
             <div class="fieldLabel">Credit outcome</div>
             <div class="chips" role="group" aria-label="Credit outcome">
-<input type="hidden" id="creditCredit" value="unsure">
-
+              <input type="hidden" id="creditCredit" value="unsure" />
               <button type="button" class="chip" data-credit="yes">Credit</button>
               <button type="button" class="chip" data-credit="no">No credit</button>
               <button type="button" class="chip active" data-credit="unsure">Unsure</button>
             </div>
-            <input type="hidden" id="creditCredit" value="unsure" />
+          </div>
+
+          <div>
+            <div class="fieldLabel">Attended</div>
+            <div class="chips" role="group" aria-label="Attended">
+              <input type="hidden" id="attended" value="yes" />
+              <button type="button" class="chip" data-attended="yes">Attended</button>
+              <button type="button" class="chip" data-attended="no">Not attended</button>
+            </div>
           </div>
 
           <div>
@@ -952,7 +1022,6 @@ dialog.modal input, dialog.modal select, dialog.modal textarea{
           </div>
 
           <div class="hint">
-            Stored on your device. Not affiliated with Liverpool FC.
           </div>
         </form>
       </section>
@@ -1523,7 +1592,7 @@ function eligibilityText(totals) {
 }
 
 function formatMatchTitle(m) {
-  return `Liverpool vs ${m.opponent} (${m.venue})`;
+  return `Liverpool vs ${m.opponent}`;
 }
 
 function formatDisplayDate(ymd) {
@@ -1543,9 +1612,8 @@ function competitionBadgeClass(comp) {
 }
 
 function formatMeta(m) {
-  const comp = competitionLabel(m.competition);
   const date = formatDisplayDate(m.matchDate || "");
-  return `${date} • ${comp}`;
+  return `${date}`;
 }
 
 function badgeForCredit(m) {
@@ -1735,7 +1803,7 @@ if (matches.length === 0) {
 
 function matchCard(m) {
   const div = document.createElement("div");
-  div.className = "item";
+  div.className = "item matchItem";
   div.tabIndex = 0;
   div.role = "button";
 
@@ -1752,10 +1820,19 @@ function matchCard(m) {
   left.appendChild(title);
   left.appendChild(meta);
 
+  const cornerTags = document.createElement("div");
+  cornerTags.className = "itemCornerTags";
   const ha = (m.venue === "A") ? "A" : "H";
+  const comp = competitionLabel(m.competition || "OTHER");
+  const compClass = competitionBadgeClass(m.competition);
+  const compPill = document.createElement("div");
+  compPill.className = `pill comp-pill ${compClass}`;
+  compPill.textContent = comp;
   const haPill = document.createElement("div");
   haPill.className = `pill ${ha === "H" ? "ha-home" : "ha-away"}`;
   haPill.textContent = ha;
+  cornerTags.appendChild(compPill);
+  cornerTags.appendChild(haPill);
 
   const credit = badgeForCredit(m);
   const creditBadge = document.createElement("div");
@@ -1763,7 +1840,7 @@ function matchCard(m) {
   creditBadge.textContent = credit.text;
 
   top.appendChild(left);
-  top.appendChild(haPill);
+  top.appendChild(cornerTags);
 
   const badges = document.createElement("div");
   badges.className = "itemBadges";
@@ -1774,12 +1851,14 @@ function matchCard(m) {
     cost.textContent = `${formatGBP(m.amountPaid)}`;
     badges.appendChild(cost);
   }
-  const comp = document.createElement("div");
-  comp.className = `badge ${competitionBadgeClass(m.competition)}`;
-  comp.textContent = competitionLabel(m.competition);
-
   badges.appendChild(creditBadge);
-  badges.appendChild(comp);
+
+  if (m.attended === "yes" || m.attended === "no") {
+    const attended = document.createElement("div");
+    attended.className = `badge ${m.attended === "yes" ? "attended-yes" : "attended-no"}`;
+    attended.textContent = m.attended === "yes" ? "Att" : "Not Att";
+    badges.appendChild(attended);
+  }
 
   div.appendChild(top);
   div.appendChild(badges);
@@ -1808,12 +1887,14 @@ function renderMatches() {
   const v = $("filterVenue").value;
   const c = $("filterComp").value;
   const cr = $("filterCredit").value;
+  const attended = $("filterAttended") ? $("filterAttended").value : "";
 
   const matches = getSeasonMatches(activeSeasonId())
     .filter(m => {
       if (v && m.venue !== v) return false;
       if (c && m.competition !== c) return false;
       if (cr && m.creditCredit !== cr) return false;
+      if (attended && m.attended !== attended) return false;
       if (q) {
         const hay = `${m.opponent} ${m.notes || ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -1843,9 +1924,10 @@ function clearForm() {
   if ($("fixtureKey")) $("fixtureKey").value = "";
   $("opponent").value = "";
   $("matchDate").value = todayISODate();
-  $("venue").value = "H";
-  $("competition").value = "PL";
-    $("ticketAction").value = "credit";
+  setVenueChip("H");
+  setCompetitionChip("PL");
+  $("ticketAction").value = "credit";
+  setAttendedChip("yes");
   setCreditChip("unsure");
   $("notes").value = "";
   $("amountPaid").value = "";
@@ -1855,8 +1937,32 @@ function clearForm() {
 function setCreditChip(val) {
   const cc = $("creditCredit");
   if (cc) cc.value = val;
-  document.querySelectorAll(".chip").forEach(ch => {
+  document.querySelectorAll("[data-credit]").forEach(ch => {
     ch.classList.toggle("active", ch.dataset.credit === val);
+  });
+}
+
+function setCompetitionChip(val) {
+  const comp = $("competition");
+  if (comp) comp.value = val;
+  document.querySelectorAll("[data-comp]").forEach(ch => {
+    ch.classList.toggle("active", ch.dataset.comp === val);
+  });
+}
+
+function setVenueChip(val) {
+  const venue = $("venue");
+  if (venue) venue.value = val;
+  document.querySelectorAll("[data-ha]").forEach(ch => {
+    ch.classList.toggle("active", ch.dataset.ha === val);
+  });
+}
+
+function setAttendedChip(val) {
+  const attended = $("attended");
+  if (attended) attended.value = val;
+  document.querySelectorAll("[data-attended]").forEach(ch => {
+    ch.classList.toggle("active", ch.dataset.attended === val);
   });
 }
 
@@ -1888,6 +1994,7 @@ function upsertMatchFromForm() {
     matchDate: $("matchDate").value,
     appliedStatus: "na",
     ticketAction: $("ticketAction").value,
+    attended: $("attended").value,
     creditCredit: $("creditCredit").value,
     notes: $("notes").value.trim(),
     fixtureKey: ($("fixtureKey") ? $("fixtureKey").value.trim() : ""),
@@ -1938,9 +2045,10 @@ function editMatch(id) {
   $("matchId").value = m.id;
   $("opponent").value = m.opponent || "";
   $("matchDate").value = m.matchDate || todayISODate();
-  $("venue").value = m.venue || "H";
-  $("competition").value = m.competition || "PL";
-    $("ticketAction").value = m.ticketAction || "used";
+  setVenueChip(m.venue || "H");
+  setCompetitionChip(m.competition || "PL");
+  $("ticketAction").value = m.ticketAction || "used";
+  setAttendedChip(m.attended || "yes");
   setCreditChip(m.creditCredit || "unsure");
   $("notes").value = m.notes || "";
   $("amountPaid").value = (m.amountPaid ?? "");
@@ -1994,7 +2102,7 @@ function exportCSV() {
 
   const header = [
     "season","opponent","venue","competition","matchDate",
-    "appliedStatus","ticketAction","creditCredit","amountPaid","notes","createdAt","updatedAt"
+    "appliedStatus","ticketAction","attended","creditCredit","amountPaid","notes","createdAt","updatedAt"
   ];
 
   const lines = [header.join(",")];
@@ -2007,6 +2115,7 @@ function exportCSV() {
       m.matchDate,
       m.appliedStatus,
       m.ticketAction,
+      m.attended,
       m.creditCredit,
       m.amountPaid,
       m.notes,
@@ -2117,18 +2226,6 @@ function bindEvents() {
   
   $("btnClearForm").addEventListener("click", clearForm);
 
-  document.querySelectorAll(".chip").forEach(ch => {
-    ch.addEventListener("click", () => setCreditChip(ch.dataset.credit));
-  });
-
-  $("ticketAction").addEventListener("change", (e) => {
-    const cc = $("creditCredit");
-    const current = cc ? cc.value : "unsure";
-    if (current === "unsure") {
-      setCreditChip(defaultCreditFromAction(e.target.value));
-    }
-  });
-
   onEl("btnReloadFixtures","click", reloadFixturesHard);
   onEl("fixtureShow","change", renderFixtures);
   onEl("fixtureComp","change", renderFixtures);
@@ -2138,6 +2235,27 @@ function bindEvents() {
     btn.addEventListener("click", () => {
       const val = btn.getAttribute("data-credit");
       setCreditChip(val);
+    });
+  });
+
+  document.querySelectorAll("[data-comp]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-comp");
+      setCompetitionChip(val);
+    });
+  });
+
+  document.querySelectorAll("[data-ha]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-ha");
+      setVenueChip(val);
+    });
+  });
+
+  document.querySelectorAll("[data-attended]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const val = btn.getAttribute("data-attended");
+      setAttendedChip(val);
     });
   });
 
@@ -2181,7 +2299,7 @@ const ce=document.getElementById("fixturesCount"); if(ce) ce.textContent = `Impo
 
   $("btnDelete").addEventListener("click", deleteCurrentMatch);
 
-  ["searchInput","filterVenue","filterComp","filterCredit"].forEach(id => {
+  ["searchInput","filterVenue","filterComp","filterCredit","filterAttended"].forEach(id => {
     $(id).addEventListener("input", renderMatches);
     $(id).addEventListener("change", renderMatches);
   });
@@ -2792,13 +2910,13 @@ function prefillFromFixture(f) {
   clearForm();
   if ($("fixtureKey")) $("fixtureKey").value = (f.id || `${f.date||""}|${f.competition||""}|${f.venue||""}|${f.opponent||""}`);
   $("opponent").value = f.opponent || "";
-  $("venue").value = (f.venue === "A") ? "A" : "H";
+  setVenueChip((f.venue === "A") ? "A" : "H");
   // Map competitions to app options
   const comp = f.competition || "OTHER";
   if (["PL","UCL","FAC","LC","OTHER"].includes(comp)) {
-    $("competition").value = comp;
+    setCompetitionChip(comp);
   } else {
-    $("competition").value = "OTHER";
+    setCompetitionChip("OTHER");
   }
   $("matchDate").value = f.date || (f.datetime_utc ? f.datetime_utc.slice(0,10) : "");
   $("ticketAction").value = "credit";
@@ -2981,7 +3099,13 @@ function populateSeasonSelect(sel){
   sel.innerHTML = "";
 
   const seasons = Array.isArray(state.data.seasons) ? state.data.seasons : generateSeasons().seasons;
+  const minAccountSeasonStartYear = 2025;
+  const isAccountSetupSeason = sel.id === "setupSeason";
   for (const s of seasons) {
+    if (isAccountSetupSeason) {
+      const startYear = parseInt(String(s.id || "").split("-")[0], 10);
+      if (!Number.isFinite(startYear) || startYear < minAccountSeasonStartYear) continue;
+    }
     const opt = document.createElement("option");
     opt.value = s.id;
     opt.textContent = s.label;
